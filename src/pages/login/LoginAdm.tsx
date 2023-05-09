@@ -1,5 +1,5 @@
 import { Box, Button, Grid } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import FilledInput from "@mui/material/FilledInput";
 import InputLabel from "@mui/material/InputLabel";
@@ -8,7 +8,10 @@ import FormControl from "@mui/material/FormControl";
 import { Email, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 export default function LoginAdm() {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -17,6 +20,7 @@ export default function LoginAdm() {
   ) => {
     event.preventDefault();
   };
+
   const navigate = useNavigate();
 
   return (
@@ -53,7 +57,7 @@ export default function LoginAdm() {
                 Email
               </InputLabel>
               <FilledInput
-                onChange={(event) => console.log(event.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 id="outlined-adornment-password"
                 type={"text"}
                 endAdornment={
@@ -70,7 +74,7 @@ export default function LoginAdm() {
                 Password
               </InputLabel>
               <FilledInput
-                onChange={(event) => console.log(event.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 id="outlined-adornment-password"
                 type={showPassword ? "text" : "password"}
                 endAdornment={
