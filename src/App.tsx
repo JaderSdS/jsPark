@@ -4,6 +4,7 @@ import LoginAdm from "./pages/login/LoginAdm";
 import LoginEsta from "./pages/login/LoginEsta";
 import LoginUsu from "./pages/login/LoginUsu";
 import HomeAdm from "./pages/home/HomeAdm";
+import ParkingLotList from "./pages/crud/parkingLot/ParkingLotList";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
             <Route path="/" element={<LoginAdm />} />
             <Route path="/LoginEsta" element={<LoginEsta />} />
             <Route path="/LoginUsu" element={<LoginUsu />} />
-            <Route path="/AdmLoged" element={<HomeAdm />} />
+            <Route path="/AdmLoged" element={<ParkingLotList />} />
             <Route path="/EstaLoged" element={<LoginUsu />} />
             <Route path="/UsuLoged" element={<LoginUsu />} />
           </Routes>

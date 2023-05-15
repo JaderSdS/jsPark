@@ -7,12 +7,16 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import { Email, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { fireAuth } from "../../services/firebaseService";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 export default function LoginAdm() {
-  const [showPassword, setShowPassword] = useState(false);
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (
@@ -21,7 +25,35 @@ export default function LoginAdm() {
     event.preventDefault();
   };
 
-  const navigate = useNavigate();
+  const handleLogin = () => {
+    signInWithEmailAndPassword(fireAuth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        navigate("AdmLoged");
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  };
+
+  const handleCreateUser = () => {
+    createUserWithEmailAndPassword(fireAuth, email, password)
+      .then((userCredential) => {
+        debugger;
+        // Signed in
+        const user = userCredential.user;
+        navigate("AdmLoged");
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -94,7 +126,7 @@ export default function LoginAdm() {
                 style={{ margin: "10px" }}
                 variant="contained"
                 onClick={() => {
-                  navigate("/AdmLoged");
+                  handleLogin();
                 }}
               >
                 Login
