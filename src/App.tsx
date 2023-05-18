@@ -5,6 +5,8 @@ import LoginEsta from "./pages/login/LoginEsta";
 import LoginUsu from "./pages/login/LoginUsu";
 import HomeAdm from "./pages/home/HomeAdm";
 import ParkingLotList from "./pages/crud/parkingLot/ParkingLotList";
+import ParkingForm from "./pages/crud/parkingLot/ParkingLotCreateEdit";
+import ParkingDetails from "./pages/crud/parkingLot/ParkingLotDetails";
 
 function App() {
   return (
@@ -28,6 +30,30 @@ function App() {
             <Route path="/AdmLoged" element={<ParkingLotList />} />
             <Route path="/EstaLoged" element={<LoginUsu />} />
             <Route path="/UsuLoged" element={<LoginUsu />} />
+
+            <Route
+              path="/addEstacionamento"
+              element={<ParkingForm onSubmit={() => {}} />}
+            />
+
+            <Route
+              path="/seeEstacionamento"
+              element={<ParkingDetails formData={{
+                name: "TestName",
+                address: "adress fake test",
+                capacity: "2123",
+                price: "asda",
+                policies: {
+                  cancellation: "asadsd",
+                  refund: "adsadasda",
+                  other: "dasasdasdasdasd"
+                },
+                additionalInfo: {
+                  description: "adasdadsadadasda",
+                  instructions: "dasdasdadaddsa"
+                }
+              }} />}
+            />
           </Routes>
         </BrowserRouter>
       </SnackbarProvider>

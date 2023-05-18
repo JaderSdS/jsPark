@@ -1,0 +1,82 @@
+{
+  "estados": [
+    {
+      "id": 1,
+      "nome": "Paraná",
+      "cidades": [
+        { "id": 1, "nome": "Apucarana" },
+        { "id": 2, "nome": "Araucária" },
+        { "id": 3, "nome": "Campo Largo" },
+        { "id": 4, "nome": "Carambeí" },
+        { "id": 5, "nome": "Cascavel" },
+        { "id": 6, "nome": "Colombo" },
+        { "id": 7, "nome": "Cornélio Procópio" },
+        { "id": 8, "nome": "Curitiba" },
+        { "id": 9, "nome": "Foz do Iguaçu" },
+        { "id": 10, "nome": "Guarapuava" },
+        { "id": 11, "nome": "Irati" },
+        { "id": 12, "nome": "Londrina" },
+        { "id": 13, "nome": "Marechal Cândido Rondon" },
+        { "id": 14, "nome": "Maringá" },
+        { "id": 15, "nome": "Paranaguá" },
+        { "id": 16, "nome": "Pinhais" },
+        { "id": 17, "nome": "Ponta Grossa" },
+        { "id": 18, "nome": "São José dos Pinhais" },
+        { "id": 19, "nome": "Toledo" },
+        { "id": 20, "nome": "Umuarama" }
+      ]
+    },
+    {
+      "id": 2,
+      "nome": "Rio Grande do Sul",
+      "cidades": [
+        { "id": 21, "nome": "Bagé" },
+        { "id": 22, "nome": "Bento Gonçalves" },
+        { "id": 23, "nome": "Cachoeirinha" },
+        { "id": 24, "nome": "Canoas" },
+        { "id": 25, "nome": "Caxias do Sul" },
+        { "id": 26, "nome": "Erechim" },
+        { "id": 27, "nome": "Gravataí" },
+        { "id": 28, "nome": "Guaíba" },
+        { "id": 29, "nome": "Novo Hamburgo" },
+        { "id": 30, "nome": "Passo Fundo" },
+        { "id": 31, "nome": "Pelotas" },
+        { "id": 32, "nome": "Porto Alegre" },
+        { "id": 33, "nome": "Rio Grande" },
+        { "id": 34, "nome": "Santa Cruz do Sul" },
+        { "id": 35, "nome": "Santa Maria" },
+        { "id": 36, "nome": "Santa Rosa" },
+        { "id": 37, "nome": "Santana do Livramento" },
+        { "id": 38, "nome": "São Leopoldo" },
+        { "id": 39, "nome": "Uruguaiana" },
+        { "id": 40, "nome": "Viamão" }
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "Santa Catarina",
+      "cidades": [
+        { "id": 41, "nome": "Araranguá" },
+        { "id": 42, "nome": "Balneário Camboriú" },
+        { "id": 43, "nome": "Biguaçu" },
+        { "id": 44, "nome": "Blumenau" },
+        { "id": 45, "nome": "Brusque" },
+        { "id": 46, "nome": "Camboriú" },
+        { "id": 47, "nome": "Chapecó" },
+        { "id": 48, "nome": "Concórdia" },
+        { "id": 49, "nome": "Criciúma" },
+        { "id": 50, "nome": "Florianópolis" },
+        { "id": 51, "nome": "Itajaí" },
+        { "id": 52, "nome": "Itapema" },
+        { "id": 53, "nome": "Jaraguá do Sul" },
+        { "id": 54, "nome": "Joinville" },
+        { "id": 55, "nome": "Lages" },
+        { "id": 56, "nome": "Palhoça" },
+        { "id": 57, "nome": "Rio do Sul" },
+        { "id": 58, "nome": "São Bento do Sul" },
+        { "id": 59, "nome": "São José" },
+        { "id": 60, "nome": "Tubarão" }
+      ]
+    }
+  ]
+}
