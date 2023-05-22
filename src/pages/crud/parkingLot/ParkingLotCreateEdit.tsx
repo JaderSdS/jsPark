@@ -10,6 +10,7 @@ import {
   Select,
 } from "@mui/material";
 import estadosCidades from "./../../../services/estadosCidades.json";
+import Layout from "../../../components/layout";
 interface ParkingFormProps {
   onSubmit: (formData: FormData) => void;
 }
@@ -145,331 +146,339 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     console.log(formData);
   };
 
+  const menuItems = [
+    { label: "Página 1", link: "/pagina1" },
+    { label: "Página 2", link: "/pagina2" },
+    { label: "Página 3", link: "/pagina3" },
+  ];
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid
-        container
-        alignItems={"flex-end"}
-        justifyContent={"flex-start"}
-        spacing={3}
-      >
-        <Grid item xs={12}>
-          <h2>Formulário de Cadastro de Estacionamento</h2>
-        </Grid>
+    <Layout menuItems={menuItems}>
+      <form onSubmit={handleSubmit}>
+        <Grid
+          container
+          alignItems={"flex-end"}
+          justifyContent={"flex-start"}
+          spacing={3}
+        >
+          <Grid item xs={12}>
+            <h2>Formulário de Cadastro de Estacionamento</h2>
+          </Grid>
 
-        <Grid item xs={12}>
-          <h3>Informações Gerais:</h3>
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            name="name"
-            label="Nome do Estacionamento"
-            value={formData.name}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            name="cnpj"
-            label="CNPJ"
-            value={formData.cnpj}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            name="email"
-            label="E-mail"
-            value={formData.email}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            name="address"
-            label="Endereço"
-            value={formData.address}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            name="phone"
-            label="Telefone"
-            value={formData.phone}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            name="zipCode"
-            label="CEP"
-            value={formData.zipCode}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
+          <Grid item xs={12}>
+            <h3>Informações Gerais:</h3>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              name="name"
+              label="Nome do Estacionamento"
+              value={formData.name}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              name="cnpj"
+              label="CNPJ"
+              value={formData.cnpj}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              name="email"
+              label="E-mail"
+              value={formData.email}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              name="address"
+              label="Endereço"
+              value={formData.address}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              name="phone"
+              label="Telefone"
+              value={formData.phone}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              name="zipCode"
+              label="CEP"
+              value={formData.zipCode}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
 
-        <Grid item xs={12} sm={3}>
-          <InputLabel>Estado</InputLabel>
-          <Select
-            fullWidth
-            value={selectedState?.id || ""}
-            onChange={(event) => handleStateChange(event)}
-          >
-            {states.map((state) => (
-              <MenuItem key={state.id} value={state.id}>
-                {state.nome}
-              </MenuItem>
-            ))}
-          </Select>
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <InputLabel>Cidade</InputLabel>
-          <Select
-            fullWidth
-            value={selectedCity?.id || 0}
-            onChange={(event) => handleCityChange(event)}
-          >
-            {selectedState ? (
-              selectedState.cidades.map((city) => (
-                <MenuItem key={city.id} value={city.id}>
-                  {city.nome}
+          <Grid item xs={12} sm={3}>
+            <InputLabel>Estado</InputLabel>
+            <Select
+              fullWidth
+              value={selectedState?.id || ""}
+              onChange={(event) => handleStateChange(event)}
+            >
+              {states.map((state) => (
+                <MenuItem key={state.id} value={state.id}>
+                  {state.nome}
                 </MenuItem>
-              ))
-            ) : (
-              <MenuItem key={"unselectedState"} value={0} disabled>
-                Selecione um estado
-              </MenuItem>
-            )}
-          </Select>
-        </Grid>
-        <Grid item xs={12}>
-          <h3>Horário de Funcionamento:</h3>
-        </Grid>
-        {[
-          "Segunda-feira",
-          "Terça-feira",
-          "Quarta-feira",
-          "Quinta-feira",
-          "Sexta-feira",
-          "Sábado",
-          "Domingo",
-        ].map((day) => (
-          <React.Fragment key={day}>
-            <Grid item xs={12} sm={1}>
-              <h4>{day}</h4>
-            </Grid>
-            <Grid item xs={6} sm={1}>
-              <TextField
-                name={`openingHours.${day}.openingTime`}
-                label="Abertura"
-                value={formData.openingHours[day]?.openingTime || ""}
-                onChange={(event) => handleInputChange(event)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={6} sm={1}>
-              <TextField
-                name={`openingHours.${day}.closingTime`}
-                label="Fechamento"
-                value={formData.openingHours[day]?.closingTime || ""}
-                onChange={(event) => handleInputChange(event)}
-                fullWidth
-              />
-            </Grid>
-          </React.Fragment>
-        ))}
+              ))}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <InputLabel>Cidade</InputLabel>
+            <Select
+              fullWidth
+              value={selectedCity?.id || 0}
+              onChange={(event) => handleCityChange(event)}
+            >
+              {selectedState ? (
+                selectedState.cidades.map((city) => (
+                  <MenuItem key={city.id} value={city.id}>
+                    {city.nome}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem key={"unselectedState"} value={0} disabled>
+                  Selecione um estado
+                </MenuItem>
+              )}
+            </Select>
+          </Grid>
+          <Grid item xs={12}>
+            <h3>Horário de Funcionamento:</h3>
+          </Grid>
+          {[
+            "Segunda-feira",
+            "Terça-feira",
+            "Quarta-feira",
+            "Quinta-feira",
+            "Sexta-feira",
+            "Sábado",
+            "Domingo",
+          ].map((day) => (
+            <React.Fragment key={day}>
+              <Grid item xs={12} sm={1}>
+                <h4>{day}</h4>
+              </Grid>
+              <Grid item xs={6} sm={1}>
+                <TextField
+                  name={`openingHours.${day}.openingTime`}
+                  label="Abertura"
+                  value={formData.openingHours[day]?.openingTime || ""}
+                  onChange={(event) => handleInputChange(event)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={6} sm={1}>
+                <TextField
+                  name={`openingHours.${day}.closingTime`}
+                  label="Fechamento"
+                  value={formData.openingHours[day]?.closingTime || ""}
+                  onChange={(event) => handleInputChange(event)}
+                  fullWidth
+                />
+              </Grid>
+            </React.Fragment>
+          ))}
 
-        <Grid item xs={12}>
-          <h3>Serviços Disponíveis:</h3>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="wifi"
-                checked={formData.services.wifi}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Wi-Fi"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="security"
-                checked={formData.services.security}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Segurança 24 horas"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="coveredParking"
-                checked={formData.services.coveredParking}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Estacionamento Coberto"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="disabledParking"
-                checked={formData.services.disabledParking}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Estacionamento para Deficientes"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="carWash"
-                checked={formData.services.carWash}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Lavagem"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="valet"
-                checked={formData.services.valetService}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Manobrista"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="electricCarCharging"
-                checked={formData.services.electricCarCharging}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Carregador para carrro elétrico"
-          />
-        </Grid>
+          <Grid item xs={12}>
+            <h3>Serviços Disponíveis:</h3>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="wifi"
+                  checked={formData.services.wifi}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Wi-Fi"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="security"
+                  checked={formData.services.security}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Segurança 24 horas"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="coveredParking"
+                  checked={formData.services.coveredParking}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Estacionamento Coberto"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="disabledParking"
+                  checked={formData.services.disabledParking}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Estacionamento para Deficientes"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="carWash"
+                  checked={formData.services.carWash}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Lavagem"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="valet"
+                  checked={formData.services.valetService}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Manobrista"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="electricCarCharging"
+                  checked={formData.services.electricCarCharging}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Carregador para carrro elétrico"
+            />
+          </Grid>
 
-        <Grid item xs={12}>
-          <h3>Preços:</h3>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="hourlyRate"
-            label="Tarifa por hora"
-            value={formData.prices.hourlyRate}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="dailyRate"
-            label="Tarifa Diária"
-            value={formData.prices.dailyRate}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="monthlyPackages"
-                checked={formData.prices.monthlyPackages}
-                onChange={handleCheckboxChange}
-              />
-            }
-            label="Pacotes mensais disponíveis"
-          />
-        </Grid>
+          <Grid item xs={12}>
+            <h3>Preços:</h3>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="hourlyRate"
+              label="Tarifa por hora"
+              value={formData.prices.hourlyRate}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="dailyRate"
+              label="Tarifa Diária"
+              value={formData.prices.dailyRate}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="monthlyPackages"
+                  checked={formData.prices.monthlyPackages}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Pacotes mensais disponíveis"
+            />
+          </Grid>
 
-        <Grid item xs={12}>
-          <h3>Políticas:</h3>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="cancellation"
-            label="Política de cancelamento"
-            value={formData.policies.cancellation}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="refund"
-            label="Política de reembolso"
-            value={formData.policies.refund}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="other"
-            label="Outras políticas"
-            value={formData.policies.other}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
+          <Grid item xs={12}>
+            <h3>Políticas:</h3>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="cancellation"
+              label="Política de cancelamento"
+              value={formData.policies.cancellation}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="refund"
+              label="Política de reembolso"
+              value={formData.policies.refund}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="other"
+              label="Outras políticas"
+              value={formData.policies.other}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
 
-        <Grid item xs={12}>
-          <h3>Informações Adicionais:</h3>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="description"
-            label="Descrição do Estacionamento"
-            multiline
-            rows={4}
-            value={formData.additionalInfo.description}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="instructions"
-            label="Instruções para os Clientes"
-            multiline
-            rows={4}
-            value={formData.additionalInfo.instructions}
-            onChange={(event) => handleInputChange(event)}
-            fullWidth
-          />
-        </Grid>
+          <Grid item xs={12}>
+            <h3>Informações Adicionais:</h3>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="description"
+              label="Descrição do Estacionamento"
+              multiline
+              rows={4}
+              value={formData.additionalInfo.description}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="instructions"
+              label="Instruções para os Clientes"
+              multiline
+              rows={4}
+              value={formData.additionalInfo.instructions}
+              onChange={(event) => handleInputChange(event)}
+              fullWidth
+            />
+          </Grid>
 
-        <Grid item xs={6}>
-          <Button variant="contained" color="primary" type="submit">
-            Enviar
-          </Button>
+          <Grid item xs={6}>
+            <Button variant="contained" color="primary" type="submit">
+              Enviar
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              color="secondary"
+              type="reset"
+              onClick={() => setFormData(emptyData)}
+            >
+              Limpar
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={6}>
-          <Button
-            variant="contained"
-            color="secondary"
-            type="reset"
-            onClick={() => setFormData(emptyData)}
-          >
-            Limpar
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+      </form>
+    </Layout>
   );
 };
 

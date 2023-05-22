@@ -22,39 +22,22 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
   return (
     <Grid container>
-      <Grid item xs={2}>
+      <Grid item xs={12}>
         <AppBar position="static">
           <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="menu">
-              <MenuIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Grid container direction="column">
-          {menuItems.map((item, index) => (
-            <Grid item key={index}>
-              <Typography>{item.label}</Typography>
-            </Grid>
-          ))}
-        </Grid>
-      </Grid>
-      <Grid item xs={10}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6">Header</Typography>
+            {menuItems.map((item, index) => (
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                {item.label}
+              </Typography>
+            ))}
             <Button color="inherit">
               <ExitToAppIcon />
               Sair
             </Button>
           </Toolbar>
         </AppBar>
-        <Grid container justifyContent="center" alignItems="center">
-          <Grid item>
-            <img src="path/to/image" alt="Logo" />
-          </Grid>
-        </Grid>
         <Grid container justifyContent="center">
-          <Grid item xs={10}>
+          <Grid item xs={12}>
             {children}
           </Grid>
         </Grid>
