@@ -9,6 +9,8 @@ import {
   Grid,
   InputLabel,
 } from "@mui/material";
+import Layout from "../../components/layout";
+import { useNavigate } from "react-router-dom";
 
 interface ParkingFormProps {
   onSubmit: (formData: ParkingFormData) => void;
@@ -26,7 +28,7 @@ const CheckInForm: React.FC<ParkingFormProps> = ({ onSubmit }) => {
   const [color, setColor] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [services, setServices] = useState<string[]>([]);
-
+  const navigate = useNavigate();
   const handlePlateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     // Limitar a 7 caracteres e permitir apenas números e letras
@@ -69,66 +71,80 @@ const CheckInForm: React.FC<ParkingFormProps> = ({ onSubmit }) => {
     onSubmit(formData);
   };
 
+  const menuItens = [
+    { label: "Entrar", link: "checkOut" },
+    { label: "Histórico", link: "checkOut" },
+    { label: "Perfil", link: "checkOut" },
+  ];
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <TextField
-            label="Placa"
-            value={plate}
-            onChange={handlePlateChange}
-            fullWidth
-            required
-            inputProps={{ maxLength: 7 }}
-          />
+    <Layout menuItems={menuItens}>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              label="Placa"
+              value={plate}
+              onChange={handlePlateChange}
+              fullWidth
+              required
+              inputProps={{ maxLength: 7 }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Cor"
+              value={color}
+              onChange={handleColorChange}
+              fullWidth
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <InputLabel id="payment-method-label">
+              Forma de Pagamento
+            </InputLabel>
+            <Select
+              label="Forma de Pagamento"
+              value={paymentMethod}
+              onChange={() => handlePaymentMethodChange}
+              fullWidth
+              required
+            >
+              <MenuItem value="dinheiro">Dinheiro</MenuItem>
+              <MenuItem value="cartao-credito">Cartão de Crédito</MenuItem>
+              <MenuItem value="cartao-debito">Cartão de Débito</MenuItem>
+              <MenuItem value="pix">PIX</MenuItem>
+            </Select>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox value="valet" onChange={handleServiceChange} />
+              }
+              label="Valet"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox value="lavagem" onChange={handleServiceChange} />
+              }
+              label="Lavagem"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox value="wi-fi" onChange={handleServiceChange} />
+              }
+              label="Wi-Fi"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" color="primary" type="submit">
+              Enviar
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Cor"
-            value={color}
-            onChange={handleColorChange}
-            fullWidth
-            required
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <InputLabel id="payment-method-label">Forma de Pagamento</InputLabel>
-          <Select
-            label="Forma de Pagamento"
-            value={paymentMethod}
-            onChange={() => handlePaymentMethodChange}
-            fullWidth
-            required
-          >
-            <MenuItem value="dinheiro">Dinheiro</MenuItem>
-            <MenuItem value="cartao-credito">Cartão de Crédito</MenuItem>
-            <MenuItem value="cartao-debito">Cartão de Débito</MenuItem>
-            <MenuItem value="pix">PIX</MenuItem>
-          </Select>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={<Checkbox value="valet" onChange={handleServiceChange} />}
-            label="Valet"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox value="lavagem" onChange={handleServiceChange} />
-            }
-            label="Lavagem"
-          />
-          <FormControlLabel
-            control={<Checkbox value="wi-fi" onChange={handleServiceChange} />}
-            label="Wi-Fi"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button variant="contained" color="primary" type="submit">
-            Enviar
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+      </form>
+    </Layout>
   );
 };
 

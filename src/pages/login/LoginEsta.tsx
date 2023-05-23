@@ -1,5 +1,5 @@
 import { Box, Button, Grid } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import FilledInput from "@mui/material/FilledInput";
 import InputLabel from "@mui/material/InputLabel";
@@ -7,9 +7,12 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import { Email, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { fireAuth } from "../../services/firebaseService";
 export default function LoginEsta() {
   const [showPassword, setShowPassword] = React.useState(false);
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (
@@ -19,6 +22,21 @@ export default function LoginEsta() {
   };
   const navigate = useNavigate();
 
+  const handleCreateUser = () => {
+    createUserWithEmailAndPassword(fireAuth, email, password)
+      .then((userCredential) => {
+        debugger;
+        // Signed in
+        //const user = userCredential.user;
+        navigate("AdmLoged");
+        // ...
+      })
+      .catch((error) => {
+        //const errorCode = error.code;
+        //const errorMessage = error.message;
+        // ..
+      });
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
