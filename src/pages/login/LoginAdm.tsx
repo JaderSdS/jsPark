@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import FilledInput from "@mui/material/FilledInput";
@@ -37,21 +37,29 @@ export default function LoginAdm() {
       });
   };
 
-  const tk = {
-    id: 35,
-    cnpj: 12345678911,
-    horaEntrada: Date.now(),
-    horaSaida: null,
-    placa: "abc-1234",
-    servicoAdicional: ["Lavagem"],
-  };
-
+  //   const tk = {
+  //     id: 35,
+  //     cnpj: 12345678911,
+  //     horaEntrada: Date.now(),
+  //     horaSaida: null,
+  //     placa: "abc-1234",
+  //     servicoAdicional: ["Lavagem"],
+  //   };
+  //  <QRCode value={JSON.stringify(tk)} size={150} />
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={4} md={4}>
-          <QRCode value={JSON.stringify(tk)} size={150} />
-        </Grid>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+      }}
+    >
+      <Grid
+        container
+        alignItems={"center"}
+        justifyContent={"center"}
+        spacing={2}
+      >
         <Grid
           style={{
             marginTop: "32px",
@@ -59,8 +67,9 @@ export default function LoginAdm() {
             justifyContent: "center",
           }}
           item
-          xs={8}
-          md={8}
+          xs={12}
+          md={12}
+          sm={12}
         >
           <Box
             sx={{
@@ -71,7 +80,11 @@ export default function LoginAdm() {
               justifyContent: "center",
             }}
           >
-            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+            <Typography variant="h3">Seja bem vindo admin</Typography>
+            <FormControl
+              sx={{ m: 1, width: "30%", marginTop: "36px" }}
+              variant="outlined"
+            >
               <InputLabel htmlFor="outlined-adornment-password">
                 Email
               </InputLabel>
@@ -88,7 +101,7 @@ export default function LoginAdm() {
                 }
               />
             </FormControl>
-            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+            <FormControl sx={{ m: 1, width: "30%" }} variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">
                 Password
               </InputLabel>

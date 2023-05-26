@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   TextField,
@@ -34,12 +34,7 @@ export interface FormData {
   zipCode: string;
   phone: string;
   email: string;
-  openingHours: {
-    [day: string]: {
-      openingTime: string;
-      closingTime: string;
-    };
-  };
+  openingHours: Record<string, { openingTime: string; closingTime: string }>;
   services: {
     wifi: boolean;
     security: boolean;
@@ -107,8 +102,14 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
   const [selectedState, setSelectedState] = useState<State | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
 
+  useEffect(() => {
+    const first = () => {
+      console.log(formData);
+    };
+    return first;
+  }, [formData]);
+
   const handleStateChange = (event: any) => {
-    debugger;
     const stateId = event.target.value as number;
     const state = states.find((state) => stateId === state.id);
     setSelectedState(state || null);
@@ -122,7 +123,6 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
   };
 
   const handleInputChange = (e: any) => {
-    debugger;
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
