@@ -1,5 +1,5 @@
-import React from 'react';
-import { Grid, Typography, Box } from '@mui/material';
+import React from "react";
+import { Grid, Typography, Box } from "@mui/material";
 
 interface ParkingDetailsProps {
   formData: {
@@ -20,6 +20,26 @@ interface ParkingDetailsProps {
 }
 
 const ParkingDetails: React.FC<ParkingDetailsProps> = ({ formData }) => {
+  function ordenarDiasDaSemana(diasDaSemana: any[]) {
+    const ordemDosDias = [
+      "domingo",
+      "segunda-feira",
+      "terça-feira",
+      "quarta-feira",
+      "quinta-feira",
+      "sexta-feira",
+      "sábado",
+    ];
+
+    diasDaSemana.sort((dia1: string, dia2: string) => {
+      const indiceDia1 = ordemDosDias.indexOf(dia1.toLowerCase());
+      const indiceDia2 = ordemDosDias.indexOf(dia2.toLowerCase());
+
+      return indiceDia1 - indiceDia2;
+    });
+
+    return diasDaSemana;
+  }
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>

@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import estadosCidades from "./../../../services/estadosCidades.json";
 import Layout from "../../../components/layout";
+import { setDoc, doc } from "firebase/firestore";
+import { fireDb } from "../../../services/firebaseService";
 interface ParkingFormProps {
   onSubmit: (formData: FormData) => void;
 }
@@ -130,6 +132,60 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     }));
   };
 
+  const handleOpeningHourChange = (e: any) => {
+    const { name, value } = e.target;
+    const formattedInput = value.replace(/[^\d:]/g, "");
+    let formatedValue = value;
+    if (/^\d{2}$/.test(formattedInput)) {
+      formatedValue = formattedInput + ":";
+    }
+    setFormData((prevData) => ({
+      ...prevData,
+      openingHours: {
+        ...prevData.openingHours,
+        [name.split(".")[0]]: {
+          ...prevData.openingHours[name.split(".")[0]],
+          [name.split(".")[1]]: formatedValue,
+        },
+      },
+    }));
+  };
+
+  const handlePricesChanged = (e: any) => {
+    const { name, value, checked } = e.target;
+    debugger;
+    const nameRegex = new RegExp(name);
+    setFormData((prevData) => ({
+      ...prevData,
+      prices: {
+        ...prevData.prices,
+        [name]: nameRegex.test("monthlyPackages") ? checked : value,
+      },
+    }));
+  };
+
+  const handlePoliciesChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      policies: {
+        ...prevData.policies,
+        [name]: value,
+      },
+    }));
+  };
+
+  const handleAdditionalInfoChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      additionalInfo: {
+        ...prevData.additionalInfo,
+        [name]: value,
+      },
+    }));
+  };
+
   const handleCheckboxChange = (e: any) => {
     const { name, checked } = e.target;
     setFormData((prevData) => ({
@@ -141,9 +197,12 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    await setDoc(
+      doc(fireDb, "estacionamentos", formData.cnpj.toString()),
+      formData
+    );
   };
 
   const menuItems = [
@@ -222,7 +281,6 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               fullWidth
             />
           </Grid>
-
           <Grid item xs={12} sm={3}>
             <InputLabel>Estado</InputLabel>
             <Select
@@ -275,19 +333,24 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               </Grid>
               <Grid item xs={6} sm={1}>
                 <TextField
-                  name={`openingHours.${day}.openingTime`}
+                  name={`${day}.openingTime`}
                   label="Abertura"
                   value={formData.openingHours[day]?.openingTime || ""}
-                  onChange={(event) => handleInputChange(event)}
+                  onChange={(event) => {
+                    handleOpeningHourChange(event);
+                  }}
                   fullWidth
                 />
               </Grid>
               <Grid item xs={6} sm={1}>
                 <TextField
-                  name={`openingHours.${day}.closingTime`}
+                  inputProps={{ maxLength: 5 }}
+                  name={`${day}.closingTime`}
                   label="Fechamento"
                   value={formData.openingHours[day]?.closingTime || ""}
-                  onChange={(event) => handleInputChange(event)}
+                  onChange={(event) => {
+                    handleOpeningHourChange(event);
+                  }}
                   fullWidth
                 />
               </Grid>
@@ -378,7 +441,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               name="hourlyRate"
               label="Tarifa por hora"
               value={formData.prices.hourlyRate}
-              onChange={(event) => handleInputChange(event)}
+              onChange={(event) => handlePricesChanged(event)}
               fullWidth
             />
           </Grid>
@@ -387,7 +450,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               name="dailyRate"
               label="Tarifa Diária"
               value={formData.prices.dailyRate}
-              onChange={(event) => handleInputChange(event)}
+              onChange={(event) => handlePricesChanged(event)}
               fullWidth
             />
           </Grid>
@@ -397,7 +460,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
                 <Checkbox
                   name="monthlyPackages"
                   checked={formData.prices.monthlyPackages}
-                  onChange={handleCheckboxChange}
+                  onChange={handlePricesChanged}
                 />
               }
               label="Pacotes mensais disponíveis"
@@ -412,7 +475,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               name="cancellation"
               label="Política de cancelamento"
               value={formData.policies.cancellation}
-              onChange={(event) => handleInputChange(event)}
+              onChange={(event) => handlePoliciesChange(event)}
               fullWidth
             />
           </Grid>
@@ -421,7 +484,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               name="refund"
               label="Política de reembolso"
               value={formData.policies.refund}
-              onChange={(event) => handleInputChange(event)}
+              onChange={(event) => handlePoliciesChange(event)}
               fullWidth
             />
           </Grid>
@@ -430,7 +493,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               name="other"
               label="Outras políticas"
               value={formData.policies.other}
-              onChange={(event) => handleInputChange(event)}
+              onChange={(event) => handlePoliciesChange(event)}
               fullWidth
             />
           </Grid>
@@ -445,7 +508,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               multiline
               rows={4}
               value={formData.additionalInfo.description}
-              onChange={(event) => handleInputChange(event)}
+              onChange={(event) => handleAdditionalInfoChange(event)}
               fullWidth
             />
           </Grid>
@@ -456,13 +519,20 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               multiline
               rows={4}
               value={formData.additionalInfo.instructions}
-              onChange={(event) => handleInputChange(event)}
+              onChange={(event) => handleAdditionalInfoChange(event)}
               fullWidth
             />
           </Grid>
 
           <Grid item xs={6}>
-            <Button variant="contained" color="primary" type="submit">
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              onClick={() => {
+                console.log(formData);
+              }}
+            >
               Enviar
             </Button>
           </Grid>
