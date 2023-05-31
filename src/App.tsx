@@ -44,6 +44,10 @@ function App() {
               path="/addEstacionamento"
               element={<ParkingForm onSubmit={() => {}} />}
             />
+            <Route
+              path="/listEstacionamentos"
+              element={<ParkingLotList />}
+            />
 
             <Route
               path="/seeEstacionamento"

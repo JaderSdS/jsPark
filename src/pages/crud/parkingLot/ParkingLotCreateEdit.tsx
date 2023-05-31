@@ -14,7 +14,7 @@ import Layout from "../../../components/layout";
 import { setDoc, doc } from "firebase/firestore";
 import { fireDb } from "../../../services/firebaseService";
 interface ParkingFormProps {
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (formData: ParkingLotInterface) => void;
 }
 interface City {
   id: number;
@@ -27,7 +27,7 @@ interface State {
   cidades: City[];
 }
 
-export interface FormData {
+export interface ParkingLotInterface {
   name: string;
   cnpj: number;
   address: string;
@@ -99,7 +99,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
       instructions: "",
     },
   };
-  const [formData, setFormData] = useState<FormData>(emptyData);
+  const [formData, setFormData] = useState<ParkingLotInterface>(emptyData);
 
   const [selectedState, setSelectedState] = useState<State | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
