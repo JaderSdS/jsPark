@@ -44,33 +44,7 @@ function App() {
               path="/addEstacionamento"
               element={<ParkingForm onSubmit={() => {}} />}
             />
-            <Route
-              path="/listEstacionamentos"
-              element={<ParkingLotList />}
-            />
-
-            <Route
-              path="/seeEstacionamento"
-              element={
-                <ParkingDetails
-                  formData={{
-                    name: "TestName",
-                    address: "adress fake test",
-                    capacity: "2123",
-                    price: "asda",
-                    policies: {
-                      cancellation: "asadsd",
-                      refund: "adsadasda",
-                      other: "dasasdasdasdasd",
-                    },
-                    additionalInfo: {
-                      description: "adasdadsadadasda",
-                      instructions: "dasdasdadaddsa",
-                    },
-                  }}
-                />
-              }
-            />
+            <Route path="/listEstacionamentos" element={<ParkingLotList />} />
           </Routes>
         </BrowserRouter>
       </SnackbarProvider>

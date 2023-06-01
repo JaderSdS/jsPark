@@ -1,22 +1,19 @@
 import React from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { ParkingLotInterface } from "./ParkingLotCreateEdit";
 
 interface ParkingDetailsProps {
-  formData: {
-    name: string;
-    address: string;
-    capacity: string;
-    price: string;
-    policies: {
-      cancellation: string;
-      refund: string;
-      other: string;
-    };
-    additionalInfo: {
-      description: string;
-      instructions: string;
-    };
-  };
+  formData: ParkingLotInterface[];
 }
 
 const ParkingDetails: React.FC<ParkingDetailsProps> = ({ formData }) => {
@@ -41,64 +38,123 @@ const ParkingDetails: React.FC<ParkingDetailsProps> = ({ formData }) => {
     return diasDaSemana;
   }
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Typography variant="h5" gutterBottom>
-          Detalhes do Estacionamento
-        </Typography>
-      </Grid>
-
-      <Grid item xs={12} sm={6}>
-        <Box bgcolor="#00ccbe" p={2} color="#ffffff">
-          <Typography variant="h6" gutterBottom>
-            Informações Gerais
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Nome: {formData.name}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Endereço: {formData.address}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Capacidade: {formData.capacity}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Preço por Hora: {formData.price}
-          </Typography>
-        </Box>
-      </Grid>
-
-      <Grid item xs={12} sm={6}>
-        <Box bgcolor="#09a6a3" p={2} color="#ffffff">
-          <Typography variant="h6" gutterBottom>
-            Políticas
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Política de Cancelamento: {formData.policies.cancellation}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Política de Reembolso: {formData.policies.refund}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Outras Políticas: {formData.policies.other}
-          </Typography>
-        </Box>
-      </Grid>
-
-      <Grid item xs={12}>
-        <Box bgcolor="#9dbfaf" p={2} color="#ffffff">
-          <Typography variant="h6" gutterBottom>
-            Informações Adicionais
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Descrição do Estacionamento: {formData.additionalInfo.description}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Instruções para os Clientes: {formData.additionalInfo.instructions}
-          </Typography>
-        </Box>
-      </Grid>
-    </Grid>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>CNPJ</TableCell>
+            <TableCell>Address</TableCell>
+            <TableCell>City</TableCell>
+            <TableCell>State</TableCell>
+            <TableCell>Zip Code</TableCell>
+            <TableCell>Phone</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Opening Hours</TableCell>
+            <TableCell>Services</TableCell>
+            <TableCell>Prices</TableCell>
+            <TableCell>Policies</TableCell>
+            <TableCell>Additional Info</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {formData.map((parkingLot, index) => (
+            <TableRow key={index}>
+              <TableCell>{parkingLot.name}</TableCell>
+              <TableCell>{parkingLot.cnpj}</TableCell>
+              <TableCell>{parkingLot.address}</TableCell>
+              <TableCell>{parkingLot.city}</TableCell>
+              <TableCell>{parkingLot.state}</TableCell>
+              <TableCell>{parkingLot.zipCode}</TableCell>
+              <TableCell>{parkingLot.phone}</TableCell>
+              <TableCell>{parkingLot.email}</TableCell>
+              <TableCell>
+                <ul>
+                  {Object.entries(parkingLot.openingHours).map(
+                    ([day, { openingTime, closingTime }]) => (
+                      <li key={day}>
+                        {day}: {openingTime} - {closingTime}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </TableCell>
+              <TableCell>
+                <ul>
+                  <li>
+                    Wifi:{" "}
+                    {parkingLot.services.wifi ? "Available" : "Not available"}
+                  </li>
+                  <li>
+                    Security:{" "}
+                    {parkingLot.services.security
+                      ? "Available"
+                      : "Not available"}
+                  </li>
+                  <li>
+                    Covered Parking:{" "}
+                    {parkingLot.services.coveredParking
+                      ? "Available"
+                      : "Not available"}
+                  </li>
+                  <li>
+                    Disabled Parking:{" "}
+                    {parkingLot.services.disabledParking
+                      ? "Available"
+                      : "Not available"}
+                  </li>
+                  <li>
+                    Car Wash:{" "}
+                    {parkingLot.services.carWash
+                      ? "Available"
+                      : "Not available"}
+                  </li>
+                  <li>
+                    Valet Service:{" "}
+                    {parkingLot.services.valetService
+                      ? "Available"
+                      : "Not available"}
+                  </li>
+                  <li>
+                    Electric Car Charging:{" "}
+                    {parkingLot.services.electricCarCharging
+                      ? "Available"
+                      : "Not available"}
+                  </li>
+                </ul>
+              </TableCell>
+              <TableCell>
+                <ul>
+                  <li>Hourly Rate: {parkingLot.prices.hourlyRate}</li>
+                  <li>Daily Rate: {parkingLot.prices.dailyRate}</li>
+                  <li>
+                    Monthly Packages:{" "}
+                    {parkingLot.prices.monthlyPackages
+                      ? "Available"
+                      : "Not available"}
+                  </li>
+                </ul>
+              </TableCell>
+              <TableCell>
+                <ul>
+                  <li>Cancellation: {parkingLot.policies.cancellation}</li>
+                  <li>Refund: {parkingLot.policies.refund}</li>
+                  <li>Other: {parkingLot.policies.other}</li>
+                </ul>
+              </TableCell>
+              <TableCell>
+                <Typography>
+                  Description: {parkingLot.additionalInfo.description}
+                </Typography>
+                <Typography>
+                  Instructions: {parkingLot.additionalInfo.instructions}
+                </Typography>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
