@@ -1,8 +1,6 @@
 import React from "react";
 import {
-  Grid,
   Typography,
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +14,7 @@ interface ParkingDetailsProps {
   formData: ParkingLotInterface[];
 }
 
-const ParkingDetails: React.FC<ParkingDetailsProps> = ({ formData }) => {
+const ParkingListComponent: React.FC<ParkingDetailsProps> = ({ formData }) => {
   function ordenarDiasDaSemana(diasDaSemana: any[]) {
     const ordemDosDias = [
       "domingo",
@@ -37,6 +35,7 @@ const ParkingDetails: React.FC<ParkingDetailsProps> = ({ formData }) => {
 
     return diasDaSemana;
   }
+  
   return (
     <TableContainer>
       <Table>
@@ -158,4 +157,4 @@ const ParkingDetails: React.FC<ParkingDetailsProps> = ({ formData }) => {
   );
 };
 
-export default ParkingDetails;
+export default ParkingListComponent;

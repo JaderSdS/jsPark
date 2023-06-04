@@ -2,17 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { fireDb } from "../../../services/firebaseService";
 import { ParkingLotInterface } from "./ParkingLotCreateEdit";
-import {
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
-import ParkingDetails from "./ParkingLotDetails";
+import ParkingListComponent from "./ParkingLotDetails";
 
 export default function ParkingLotList() {
   const parkingLotRef = collection(fireDb, "estacionamentos");
@@ -31,7 +21,7 @@ export default function ParkingLotList() {
   return (
     <div>
       <h1>Lista de todos os estacionamentos</h1>
-      <ParkingDetails formData={parkingLots} />
+      <ParkingListComponent formData={parkingLots} />
     </div>
   );
 }

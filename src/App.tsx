@@ -5,7 +5,7 @@ import LoginEsta from "./pages/login/LoginEsta";
 import LoginUsu from "./pages/login/LoginUsu";
 import ParkingLotList from "./pages/crud/parkingLot/ParkingLotList";
 import ParkingForm from "./pages/crud/parkingLot/ParkingLotCreateEdit";
-import ParkingDetails from "./pages/crud/parkingLot/ParkingLotDetails";
+import ParkingListComponent from "./pages/crud/parkingLot/ParkingLotDetails";
 import CheckInForm from "./pages/estacionamento/checkIn";
 import CheckOutForm from "./pages/estacionamento/checkOut";
 
