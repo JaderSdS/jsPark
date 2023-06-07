@@ -10,12 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { fireAuth } from "../../services/firebaseService";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import QRCode from "react-qr-code";
+import { useSnackbar } from "notistack";
 export default function LoginAdm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -28,10 +31,12 @@ export default function LoginAdm() {
       .then((userCredential) => {
         // Signed in
         //const user = userCredential.user;
+        enqueueSnackbar("Bem vindo novamente", { variant: "success" });
         navigate("AdmLoged");
         // ...
       })
       .catch((error) => {
+        enqueueSnackbar("Erro ao logar", { variant: "error" });
         //const errorCode = error.code;
         //const errorMessage = error.message;
       });
@@ -130,9 +135,6 @@ export default function LoginAdm() {
                 }}
               >
                 Login
-              </Button>
-              <Button style={{ margin: "10px" }} variant="outlined">
-                Cadastro
               </Button>
             </FormControl>
           </Box>

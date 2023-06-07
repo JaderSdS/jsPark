@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import FilledInput from "@mui/material/FilledInput";
@@ -7,46 +7,65 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import { Email, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { fireAuth } from "../../services/firebaseService";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import QRCode from "react-qr-code";
+import { useSnackbar } from "notistack";
+
 export default function LoginEsta() {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     event.preventDefault();
   };
-  const navigate = useNavigate();
 
-  const handleCreateUser = () => {
-    createUserWithEmailAndPassword(fireAuth, email, password)
+  const handleLogin = () => {
+    signInWithEmailAndPassword(fireAuth, email, password)
       .then((userCredential) => {
-        debugger;
         // Signed in
         //const user = userCredential.user;
+        enqueueSnackbar("Bem vindo novamente", { variant: "success" });
         navigate("AdmLoged");
         // ...
       })
       .catch((error) => {
+        enqueueSnackbar("Erro ao logar", { variant: "error" });
         //const errorCode = error.code;
         //const errorMessage = error.message;
-        // ..
       });
   };
+
+  //   const tk = {
+  //     id: 35,
+  //     cnpj: 12345678911,
+  //     horaEntrada: Date.now(),
+  //     horaSaida: null,
+  //     placa: "abc-1234",
+  //     servicoAdicional: ["Lavagem"],
+  //   };
+  //  <QRCode value={JSON.stringify(tk)} size={150} />
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={4} md={4}>
-          <img
-            width="100%"
-            src="https://www.cimentoitambe.com.br/wp-content/uploads/2020/09/garagem_POA-min.jpg"
-            alt="estacionamento"
-          />
-        </Grid>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+      }}
+    >
+      <Grid
+        container
+        alignItems={"center"}
+        justifyContent={"center"}
+        spacing={2}
+      >
         <Grid
           style={{
             marginTop: "32px",
@@ -54,8 +73,9 @@ export default function LoginEsta() {
             justifyContent: "center",
           }}
           item
-          xs={8}
-          md={8}
+          xs={12}
+          md={12}
+          sm={12}
         >
           <Box
             sx={{
@@ -66,12 +86,18 @@ export default function LoginEsta() {
               justifyContent: "center",
             }}
           >
-            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+            <Typography variant="h3">
+              Entre com o email e senha do seu estacionamento
+            </Typography>
+            <FormControl
+              sx={{ m: 1, width: "30%", marginTop: "36px" }}
+              variant="outlined"
+            >
               <InputLabel htmlFor="outlined-adornment-password">
                 Email
               </InputLabel>
               <FilledInput
-                onChange={(event) => console.log(event.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 id="outlined-adornment-password"
                 type={"text"}
                 endAdornment={
@@ -83,12 +109,12 @@ export default function LoginEsta() {
                 }
               />
             </FormControl>
-            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+            <FormControl sx={{ m: 1, width: "30%" }} variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">
                 Password
               </InputLabel>
               <FilledInput
-                onChange={(event) => console.log(event.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 id="outlined-adornment-password"
                 type={showPassword ? "text" : "password"}
                 endAdornment={
@@ -104,11 +130,14 @@ export default function LoginEsta() {
                   </InputAdornment>
                 }
               />
-              <Button style={{ margin: "10px" }} variant="contained">
+              <Button
+                style={{ margin: "10px" }}
+                variant="contained"
+                onClick={() => {
+                  handleLogin();
+                }}
+              >
                 Login
-              </Button>
-              <Button style={{ margin: "10px" }} variant="outlined">
-                Cadastro
               </Button>
             </FormControl>
           </Box>

@@ -1,37 +1,95 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   TextField,
-  Select,
-  MenuItem,
   Checkbox,
   FormControlLabel,
   Button,
   Grid,
-  InputLabel,
 } from "@mui/material";
 import Layout from "../../components/layout";
 import { useNavigate } from "react-router-dom";
+import { setDoc, doc, collection, getDocs } from "firebase/firestore";
+import { fireDb } from "../../services/firebaseService";
+import { AuthContext } from "../../contexts/UserContext";
+import { ParkingLotInterface } from "../crud/parkingLot/ParkingLotCreateEdit";
 
 interface ParkingFormProps {
   onSubmit: (formData: ParkingFormData) => void;
 }
 
 interface ParkingFormData {
+  cnpj: string;
   plate: string;
-  color: string;
-  paymentMethod: string;
   services: string[];
+  color: string;
+  entryTime: number;
+  exitTime?: number;
+  paymentMethod: string;
+  value?: number;
 }
 
-const CheckInForm: React.FC<ParkingFormProps> = ({ onSubmit }) => {
+interface item {
+  label: string;
+  value: string;
+}
+
+const CheckInForm: React.FC<ParkingFormProps> = () => {
   const [plate, setPlate] = useState("");
   const [color, setColor] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [services, setServices] = useState<string[]>([]);
-  const navigate = useNavigate();
+  const ticketsRef = collection(fireDb, "tickets");
+
+  const parkingLotRef = collection(fireDb, "estacionamentos");
+
+  const user = useContext(AuthContext);
+
+  const [parkingLot, setParkingLot] = useState<any>();
+
+  const [parkingLotServices, setParkingLotServices] = useState<item[]>([]); // [ {name: "Lavagem", price: 10}, {name: "Lavagem", price: 10}
+
+  const allServices = {
+    wifi: "Wi-fi",
+    security: "Segurança",
+    coveredParking: "Estacionamento coberto",
+    disabledParking: "Estacionamento para deficientes",
+    carWash: "Lavagem de carro",
+    valetService: "Manobrista",
+    electricCarCharging: "Carregamento de carro elétrico",
+  };
+
+  const getParkingLotCnpj = async () => {
+    const data = await getDocs(parkingLotRef);
+    const parkingLot = data.docs.map((doc) => doc.data());
+    const parkingLotCnpj = parkingLot.filter(
+      (parkingLot) => parkingLot.email === user?.email
+    );
+    setParkingLot(parkingLotCnpj[0]);
+    let services: item[] = [];
+    debugger;
+    Object.keys(parkingLotCnpj[0].services).forEach((element: any) => {
+      if (parkingLotCnpj[0].services[element]) {
+        services.push({
+          label:
+            Object.values(allServices).find((service) => service === element) ||
+            "",
+          value:
+            Object.keys(allServices).find((service) => service === element) ||
+            "",
+        });
+      }
+    });
+    debugger;
+    setParkingLotServices(services);
+  };
+
+  useEffect(() => {
+    getParkingLotCnpj();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handlePlateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
-    // Limitar a 7 caracteres e permitir apenas números e letras
     const sanitizedValue = value.slice(0, 7).replace(/[^a-zA-Z0-9]/g, "");
     setPlate(sanitizedValue);
   };
@@ -40,11 +98,11 @@ const CheckInForm: React.FC<ParkingFormProps> = ({ onSubmit }) => {
     setColor(event.target.value);
   };
 
-  const handlePaymentMethodChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
-    setPaymentMethod(event.target.value as string);
-  };
+  // const handlePaymentMethodChange = (
+  //   event: React.ChangeEvent<{ value: unknown }>
+  // ) => {
+  //   setPaymentMethod(event.target.value as string);
+  // };
 
   const handleServiceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
@@ -57,18 +115,40 @@ const CheckInForm: React.FC<ParkingFormProps> = ({ onSubmit }) => {
     });
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+    console.log(parkingLot.services);
     const formData: ParkingFormData = {
+      entryTime: Date.now(),
       plate,
       color,
       paymentMethod,
       services,
+      cnpj: parkingLot.cnpj,
     };
 
-    // Aqui você pode fazer qualquer ação necessária com o objeto de formData, como enviá-lo para o backend ou manipulá-lo de acordo com suas necessidades.
-    onSubmit(formData);
+    await setDoc(doc(fireDb, "tickets", await getLastTicket()), formData);
+    setColor("");
+    setPlate("");
+    setPaymentMethod("");
+  };
+
+  const getLastTicket = async () => {
+    const data = await getDocs(ticketsRef);
+
+    let a = data.docs.map((doc) => doc.id);
+
+    var bigger = Number(a[0]);
+
+    for (var i = 1; i < a.length; i++) {
+      var actualNumber = Number(a[i]);
+
+      if (actualNumber > bigger) {
+        bigger = actualNumber;
+      }
+    }
+    bigger += 1;
+    return bigger.toString();
   };
 
   const menuItens = [
@@ -77,73 +157,78 @@ const CheckInForm: React.FC<ParkingFormProps> = ({ onSubmit }) => {
     { label: "Perfil", link: "checkOut" },
   ];
 
+  //   const tk = {
+  //     id: 35,
+  //     cnpj: 12345678911,
+  //     horaEntrada: Date.now(),
+  //     horaSaida: null,
+  //     placa: "abc-1234",
+  //     servicoAdicional: ["Lavagem"],
+  //   };
+  //  <QRCode value={JSON.stringify(tk)} size={150} />
+
   return (
     <Layout menuItems={menuItens}>
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              label="Placa"
-              value={plate}
-              onChange={handlePlateChange}
-              fullWidth
-              required
-              inputProps={{ maxLength: 7 }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Cor"
-              value={color}
-              onChange={handleColorChange}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <InputLabel id="payment-method-label">
-              Forma de Pagamento
-            </InputLabel>
-            <Select
-              label="Forma de Pagamento"
-              value={paymentMethod}
-              onChange={() => handlePaymentMethodChange}
-              fullWidth
-              required
-            >
-              <MenuItem value="dinheiro">Dinheiro</MenuItem>
-              <MenuItem value="cartao-credito">Cartão de Crédito</MenuItem>
-              <MenuItem value="cartao-debito">Cartão de Débito</MenuItem>
-              <MenuItem value="pix">PIX</MenuItem>
-            </Select>
-          </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox value="valet" onChange={handleServiceChange} />
-              }
-              label="Valet"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox value="lavagem" onChange={handleServiceChange} />
-              }
-              label="Lavagem"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox value="wi-fi" onChange={handleServiceChange} />
-              }
-              label="Wi-Fi"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button variant="contained" color="primary" type="submit">
-              Enviar
-            </Button>
-          </Grid>
+      <h2>Registrar entrada</h2>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6} sm={12}>
+          <TextField
+            label="Placa"
+            value={plate}
+            onChange={handlePlateChange}
+            fullWidth
+            required
+            inputProps={{ maxLength: 7 }}
+          />
         </Grid>
-      </form>
+        <Grid item xs={12} md={6} sm={12}>
+          <TextField
+            label="Cor"
+            value={color}
+            onChange={handleColorChange}
+            fullWidth
+          />
+        </Grid>
+        {/* <Grid item xs={12} md={6} sm={12}>
+          <InputLabel id="payment-method-label">Forma de Pagamento</InputLabel>
+          <Select
+            label="Forma de Pagamento"
+            value={paymentMethod}
+            onChange={() => handlePaymentMethodChange}
+            fullWidth
+            required
+          >
+            <MenuItem value="dinheiro">Dinheiro</MenuItem>
+            <MenuItem value="cartao-credito">Cartão de Crédito</MenuItem>
+            <MenuItem value="cartao-debito">Cartão de Débito</MenuItem>
+            <MenuItem value="pix">PIX</MenuItem>
+          </Select>
+        </Grid> */}
+        <Grid item xs={12} md={6} sm={12}>
+          {parkingLotServices.length > 0 &&
+            //services are an object, how to map it?
+            parkingLotServices.map((service) => {
+              debugger;
+              return (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={false}
+                      onChange={handleServiceChange}
+                      value={service}
+                    />
+                  }
+                  label={service.label}
+                />
+              );
+            })}
+        </Grid>
+        <Grid item xs={12} md={12} sm={12}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Registrar
+          </Button>
+        </Grid>
+      </Grid>
     </Layout>
   );
 };

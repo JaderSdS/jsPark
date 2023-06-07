@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 import { ParkingLotInterface } from "./ParkingLotCreateEdit";
 
-interface ParkingDetailsProps {
+interface ParkingListProps {
   formData: ParkingLotInterface[];
 }
 
-const ParkingListComponent: React.FC<ParkingDetailsProps> = ({ formData }) => {
+const ParkingListComponent: React.FC<ParkingListProps> = ({ formData }) => {
   function ordenarDiasDaSemana(diasDaSemana: any[]) {
     const ordemDosDias = [
       "domingo",

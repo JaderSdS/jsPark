@@ -13,6 +13,9 @@ import estadosCidades from "./../../../services/estadosCidades.json";
 import Layout from "../../../components/layout";
 import { setDoc, doc } from "firebase/firestore";
 import { fireDb } from "../../../services/firebaseService";
+import { adminMenuItems } from "./ParkingLotList";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 interface ParkingFormProps {
   onSubmit: (formData: ParkingLotInterface) => void;
 }
@@ -100,9 +103,10 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     },
   };
   const [formData, setFormData] = useState<ParkingLotInterface>(emptyData);
-
+  const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState<State | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const first = () => {
@@ -135,6 +139,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
   const handleOpeningHourChange = (e: any) => {
     const { name, value } = e.target;
     const formattedInput = value.replace(/[^\d:]/g, "");
+
     let formatedValue = value;
     if (/^\d{2}$/.test(formattedInput)) {
       formatedValue = formattedInput + ":";
@@ -153,7 +158,6 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
 
   const handlePricesChanged = (e: any) => {
     const { name, value, checked } = e.target;
-    debugger;
     const nameRegex = new RegExp(name);
     setFormData((prevData) => ({
       ...prevData,
@@ -202,17 +206,18 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     await setDoc(
       doc(fireDb, "estacionamentos", formData.cnpj.toString()),
       formData
-    );
+    )
+      .then(() => {
+        enqueueSnackbar("Estacionamento cadastrado com sucesso");
+        navigate("listEstacionamentos");
+      })
+      .catch((error) => {
+        enqueueSnackbar("Erro ao cadastrar estacionamento");
+      });
   };
 
-  const menuItems = [
-    { label: "Página 1", link: "/pagina1" },
-    { label: "Página 2", link: "/pagina2" },
-    { label: "Página 3", link: "/pagina3" },
-  ];
-
   return (
-    <Layout menuItems={menuItems}>
+    <Layout menuItems={adminMenuItems}>
       <form onSubmit={handleSubmit}>
         <Grid
           container
