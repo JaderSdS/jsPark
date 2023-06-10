@@ -10,7 +10,7 @@ import {
   Select,
 } from "@mui/material";
 import estadosCidades from "./../../../services/estadosCidades.json";
-import Layout from "../../../components/layout";
+import Layout from "../../../components/Layout";
 import { setDoc, doc } from "firebase/firestore";
 import { fireDb } from "../../../services/firebaseService";
 import { adminMenuItems } from "./ParkingLotList";
@@ -19,12 +19,12 @@ import { useSnackbar } from "notistack";
 interface ParkingFormProps {
   onSubmit: (formData: ParkingLotInterface) => void;
 }
-interface City {
+export interface City {
   id: number;
   nome: string;
 }
 
-interface State {
+export interface Estado {
   id: number;
   nome: string;
   cidades: City[];
@@ -34,8 +34,8 @@ export interface ParkingLotInterface {
   name: string;
   cnpj: number;
   address: string;
-  city: string;
-  state: string;
+  city: number;
+  state: number;
   zipCode: string;
   phone: string;
   email: string;
@@ -65,15 +65,15 @@ export interface ParkingLotInterface {
   };
 }
 
-const states: State[] = estadosCidades.estados;
+const states: Estado[] = estadosCidades.estados;
 
 const ParkingForm: React.FC<ParkingFormProps> = () => {
   const emptyData = {
     name: "",
     cnpj: 0,
     address: "",
-    city: "",
-    state: "",
+    city: 0,
+    state: 0,
     zipCode: "",
     phone: "",
     email: "",
@@ -104,7 +104,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
   };
   const [formData, setFormData] = useState<ParkingLotInterface>(emptyData);
   const navigate = useNavigate();
-  const [selectedState, setSelectedState] = useState<State | null>(null);
+  const [selectedState, setSelectedState] = useState<Estado | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -120,12 +120,20 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     const state = states.find((state) => stateId === state.id);
     setSelectedState(state || null);
     setSelectedCity(null);
+    setFormData((prevData) => ({
+      ...prevData,
+      state: stateId,
+    }));
   };
 
   const handleCityChange = (event: any) => {
     const cityId = event.target.value as number;
     const city = selectedState?.cidades.find((city) => cityId === city.id);
     setSelectedCity(city || null);
+    setFormData((prevData) => ({
+      ...prevData,
+      city: cityId,
+    }));
   };
 
   const handleInputChange = (e: any) => {
@@ -209,7 +217,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     )
       .then(() => {
         enqueueSnackbar("Estacionamento cadastrado com sucesso");
-        navigate("listEstacionamentos");
+        navigate("/listEstacionamentos");
       })
       .catch((error) => {
         enqueueSnackbar("Erro ao cadastrar estacionamento");
@@ -226,7 +234,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
           spacing={3}
         >
           <Grid item xs={12}>
-            <h2>Formulário de Cadastro de Estacionamento</h2>
+            <h1>Formulário de Cadastro de Estacionamento</h1>
           </Grid>
 
           <Grid item xs={12}>
@@ -243,6 +251,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
           </Grid>
           <Grid item xs={12} sm={3}>
             <TextField
+              inputProps={{ maxLength: 14 }}
               name="cnpj"
               label="CNPJ"
               value={formData.cnpj}
@@ -270,6 +279,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
           </Grid>
           <Grid item xs={12} sm={3}>
             <TextField
+              inputProps={{ maxLength: 11 }}
               name="phone"
               label="Telefone"
               value={formData.phone}
@@ -281,6 +291,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
             <TextField
               name="zipCode"
               label="CEP"
+              inputProps={{ maxLength: 8 }}
               value={formData.zipCode}
               onChange={(event) => handleInputChange(event)}
               fullWidth
@@ -534,9 +545,6 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               variant="contained"
               color="primary"
               type="submit"
-              onClick={() => {
-                console.log(formData);
-              }}
             >
               Enviar
             </Button>

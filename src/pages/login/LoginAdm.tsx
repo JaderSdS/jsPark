@@ -87,7 +87,7 @@ export default function LoginAdm() {
           >
             <Typography variant="h3">Seja bem vindo admin</Typography>
             <FormControl
-              sx={{ m: 1, width: "30%", marginTop: "36px" }}
+              sx={{ m: 1, width: "90%", marginTop: "36px" }}
               variant="outlined"
             >
               <InputLabel htmlFor="outlined-adornment-password">
@@ -106,7 +106,7 @@ export default function LoginAdm() {
                 }
               />
             </FormControl>
-            <FormControl sx={{ m: 1, width: "30%" }} variant="outlined">
+            <FormControl sx={{ m: 1, width: "90%" }} variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">
                 Password
               </InputLabel>

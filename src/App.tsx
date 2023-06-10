@@ -19,7 +19,6 @@ function App() {
   useEffect(() => {
     return () => {
       onAuthStateChanged(fireAuth, (user) => {
-        debugger;
         if (user) {
           setIsLogged(true);
         } else {
@@ -44,11 +43,8 @@ function App() {
           classes={{ containerAnchorOriginBottomCenter: "zIndex" }}
         >
           <BrowserRouter>
-            {/* {isLogged ? ( */}
             <Routes>
               <Route path="/AdmLoged" element={<ParkingLotList />} />
-              <Route path="/EstaLoged" element={<LoginUsu />} />
-              <Route path="/UsuLoged" element={<LoginUsu />} />
               <Route
                 path="/checkIn"
                 element={<CheckInForm onSubmit={() => {}} />}
@@ -63,19 +59,12 @@ function App() {
                 element={<ParkingForm onSubmit={() => {}} />}
               />
               <Route path="/listEstacionamentos" element={<ParkingLotList />} />
-              <Route path="/MeuEstacionamento" element={<LoginEsta />} />
-              <Route path="/404" element={<NotFound />} />
-              <Route path="*" element={<Navigate to={"/404"} />} />
-              {/* </Routes> */}
-              {/* ) : (
-              <Routes> */}
               <Route path="/" element={<LoginAdm />} />
               <Route path="/LoginUsu" element={<LoginUsu />} />
               <Route path="/MeuEstacionamento" element={<LoginEsta />} />
               <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<Navigate to={"/404"} />} />
             </Routes>
-            {/* )} */}
           </BrowserRouter>
         </SnackbarProvider>
       </AuthProvider>

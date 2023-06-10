@@ -6,12 +6,13 @@ import {
   Button,
   Grid,
 } from "@mui/material";
-import Layout from "../../components/layout";
-import { useNavigate } from "react-router-dom";
+import Layout from "../../components/Layout";
 import { setDoc, doc, collection, getDocs } from "firebase/firestore";
 import { fireDb } from "../../services/firebaseService";
 import { AuthContext } from "../../contexts/UserContext";
-import { ParkingLotInterface } from "../crud/parkingLot/ParkingLotCreateEdit";
+import { useSnackbar } from "notistack";
+import QRCode from "react-qr-code";
+import { Print } from "@mui/icons-material";
 
 interface ParkingFormProps {
   onSubmit: (formData: ParkingFormData) => void;
@@ -23,9 +24,9 @@ interface ParkingFormData {
   services: string[];
   color: string;
   entryTime: number;
-  exitTime?: number;
+  exitTime: number;
   paymentMethod: string;
-  value?: number;
+  value: number;
 }
 
 interface item {
@@ -35,10 +36,16 @@ interface item {
 
 const CheckInForm: React.FC<ParkingFormProps> = () => {
   const [plate, setPlate] = useState("");
+
   const [color, setColor] = useState("");
+
   const [paymentMethod, setPaymentMethod] = useState("");
+
   const [services, setServices] = useState<string[]>([]);
+
   const ticketsRef = collection(fireDb, "tickets");
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const parkingLotRef = collection(fireDb, "estacionamentos");
 
@@ -66,7 +73,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     );
     setParkingLot(parkingLotCnpj[0]);
     let services: item[] = [];
-    debugger;
     Object.keys(parkingLotCnpj[0].services).forEach((element: any) => {
       if (parkingLotCnpj[0].services[element]) {
         services.push({
@@ -79,7 +85,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
         });
       }
     });
-    debugger;
     setParkingLotServices(services);
   };
 
@@ -104,6 +109,16 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
   //   setPaymentMethod(event.target.value as string);
   // };
 
+  const handlePrint = () => {
+    const conteudo = document.getElementById("conteudo-impressao");
+    if (conteudo) {
+      const janelaImprimir = window.open("", "_blank");
+      janelaImprimir?.document.write(conteudo.innerHTML);
+      janelaImprimir?.document.close();
+      janelaImprimir?.print();
+    }
+  };
+
   const handleServiceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
     setServices((prevServices) => {
@@ -117,17 +132,65 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log(parkingLot.services);
+
     const formData: ParkingFormData = {
       entryTime: Date.now(),
       plate,
       color,
-      paymentMethod,
       services,
       cnpj: parkingLot.cnpj,
+      exitTime: 0,
+      paymentMethod: "",
+      value: 0,
     };
 
     await setDoc(doc(fireDb, "tickets", await getLastTicket()), formData);
+
+    const style = {
+      alignItems: "center",
+      justifyContent: "center",
+    };
+    const action = (snackbarId: any) => (
+      <>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePrint}
+          id="btnImprimir"
+        >
+          <Print />
+        </Button>
+      </>
+    );
+    enqueueSnackbar(
+      <Grid container spacing={2}>
+        <Grid item style={style} sm={12} md={12}>
+          Ticket gerado com sucesso
+        </Grid>
+        <div id="conteudo-impressao">
+          <Grid item style={style} sm={12} md={12}>
+            <QRCode value={JSON.stringify(formData)} size={150} />
+          </Grid>
+          <Grid item style={style} sm={12} md={12}>
+            Placa: {plate}
+          </Grid>
+          <Grid item style={style} sm={12} md={12}>
+            Entrada: {new Date(formData.entryTime).toLocaleString()}
+          </Grid>
+          <Grid item style={style} sm={12} md={12}>
+            Cor: {color}
+          </Grid>
+          <Grid item style={style} sm={12} md={12}>
+            Cnpj: {parkingLot.cnpj}
+          </Grid>
+          <Grid item style={style} sm={12} md={12}>
+            Serviços: {services}
+          </Grid>
+        </div>
+      </Grid>,
+      { action }
+    );
+
     setColor("");
     setPlate("");
     setPaymentMethod("");
@@ -208,7 +271,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
           {parkingLotServices.length > 0 &&
             //services are an object, how to map it?
             parkingLotServices.map((service) => {
-              debugger;
               return (
                 <FormControlLabel
                   control={
