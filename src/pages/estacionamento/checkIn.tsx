@@ -5,20 +5,25 @@ import {
   FormControlLabel,
   Button,
   Grid,
+  Typography,
 } from "@mui/material";
 import Layout from "../../components/Layout";
 import { setDoc, doc, collection, getDocs } from "firebase/firestore";
-import { fireDb } from "../../services/firebaseService";
+import { fireDb, parkingLotRef, ticketsRef } from "../../services/firebaseService";
 import { AuthContext } from "../../contexts/UserContext";
-import { useSnackbar } from "notistack";
+import { closeSnackbar, useSnackbar } from "notistack";
 import QRCode from "react-qr-code";
-import { Print } from "@mui/icons-material";
+import { CloseOutlined, ClosedCaption, Print } from "@mui/icons-material";
 
 interface ParkingFormProps {
-  onSubmit: (formData: ParkingFormData) => void;
+  onSubmit: (formData: ParkingTicket) => void;
 }
+export const estaMenus = [
+  { label: "Check In", link: "/checkIn" },
+  { label: "Check Out", link: "/checkOut" },
+];
 
-interface ParkingFormData {
+export interface ParkingTicket {
   cnpj: string;
   plate: string;
   services: string[];
@@ -39,15 +44,9 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
 
   const [color, setColor] = useState("");
 
-  const [paymentMethod, setPaymentMethod] = useState("");
-
   const [services, setServices] = useState<string[]>([]);
 
-  const ticketsRef = collection(fireDb, "tickets");
-
   const { enqueueSnackbar } = useSnackbar();
-
-  const parkingLotRef = collection(fireDb, "estacionamentos");
 
   const user = useContext(AuthContext);
 
@@ -103,12 +102,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     setColor(event.target.value);
   };
 
-  // const handlePaymentMethodChange = (
-  //   event: React.ChangeEvent<{ value: unknown }>
-  // ) => {
-  //   setPaymentMethod(event.target.value as string);
-  // };
-
   const handlePrint = () => {
     const conteudo = document.getElementById("conteudo-impressao");
     if (conteudo) {
@@ -132,8 +125,12 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (plate.length < 7) {
+      enqueueSnackbar("Placa inválida", { variant: "error" });
+      return;
+    }
 
-    const formData: ParkingFormData = {
+    const formData: ParkingTicket = {
       entryTime: Date.now(),
       plate,
       color,
@@ -160,12 +157,20 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
         >
           <Print />
         </Button>
+        <Button
+          variant="contained"
+          color="warning"
+          onClick={() => closeSnackbar(snackbarId)}
+          id="btnFechar"
+        >
+          <CloseOutlined />
+        </Button>
       </>
     );
     enqueueSnackbar(
       <Grid container spacing={2}>
         <Grid item style={style} sm={12} md={12}>
-          Ticket gerado com sucesso
+          <Typography variant="h6"> Ticket gerado com sucesso </Typography>
         </Grid>
         <div id="conteudo-impressao">
           <Grid item style={style} sm={12} md={12}>
@@ -188,23 +193,22 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
           </Grid>
         </div>
       </Grid>,
-      { action }
+      { action, persist: true }
     );
 
     setColor("");
     setPlate("");
-    setPaymentMethod("");
   };
 
   const getLastTicket = async () => {
     const data = await getDocs(ticketsRef);
 
-    let a = data.docs.map((doc) => doc.id);
+    let allTickets = data.docs.map((doc) => doc.id);
 
-    var bigger = Number(a[0]);
+    var bigger = Number(allTickets[0]);
 
-    for (var i = 1; i < a.length; i++) {
-      var actualNumber = Number(a[i]);
+    for (var i = 1; i < allTickets.length; i++) {
+      var actualNumber = Number(allTickets[i]);
 
       if (actualNumber > bigger) {
         bigger = actualNumber;
@@ -213,12 +217,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     bigger += 1;
     return bigger.toString();
   };
-
-  const menuItens = [
-    { label: "Entrar", link: "checkOut" },
-    { label: "Histórico", link: "checkOut" },
-    { label: "Perfil", link: "checkOut" },
-  ];
 
   //   const tk = {
   //     id: 35,
@@ -231,8 +229,8 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
   //  <QRCode value={JSON.stringify(tk)} size={150} />
 
   return (
-    <Layout menuItems={menuItens}>
-      <h2>Registrar entrada</h2>
+    <Layout menuItems={estaMenus}>
+      <Typography variant="h4">Registrar entrada</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6} sm={12}>
           <TextField
@@ -252,21 +250,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
             fullWidth
           />
         </Grid>
-        {/* <Grid item xs={12} md={6} sm={12}>
-          <InputLabel id="payment-method-label">Forma de Pagamento</InputLabel>
-          <Select
-            label="Forma de Pagamento"
-            value={paymentMethod}
-            onChange={() => handlePaymentMethodChange}
-            fullWidth
-            required
-          >
-            <MenuItem value="dinheiro">Dinheiro</MenuItem>
-            <MenuItem value="cartao-credito">Cartão de Crédito</MenuItem>
-            <MenuItem value="cartao-debito">Cartão de Débito</MenuItem>
-            <MenuItem value="pix">PIX</MenuItem>
-          </Select>
-        </Grid> */}
+
         <Grid item xs={12} md={6} sm={12}>
           {parkingLotServices.length > 0 &&
             //services are an object, how to map it?

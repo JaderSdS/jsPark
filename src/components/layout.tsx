@@ -56,7 +56,7 @@ const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
             </Button>
           </Toolbar>
         </AppBar>
-        <Grid container justifyContent="center" textAlign="center">
+        <Grid container justifyContent="flex-start">
           <Grid item xs={12}>
             {children}
           </Grid>

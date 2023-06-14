@@ -32,10 +32,11 @@ function App() {
     <div className="App">
       <AuthProvider>
         <SnackbarProvider
+          autoHideDuration={3000}
           preventDuplicate
           hideIconVariant
           dense
-          maxSnack={4}
+          maxSnack={3}
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "center",
@@ -49,10 +50,7 @@ function App() {
                 path="/checkIn"
                 element={<CheckInForm onSubmit={() => {}} />}
               />
-              <Route
-                path="/checkOut"
-                element={<CheckOutForm updateTicket={() => {}} />}
-              />
+              <Route path="/checkOut" element={<CheckOutForm />} />
 
               <Route
                 path="/addEstacionamento"

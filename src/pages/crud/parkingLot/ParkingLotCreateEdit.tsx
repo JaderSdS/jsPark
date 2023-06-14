@@ -8,6 +8,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@mui/material";
 import estadosCidades from "./../../../services/estadosCidades.json";
 import Layout from "../../../components/Layout";
@@ -50,8 +51,8 @@ export interface ParkingLotInterface {
     electricCarCharging: boolean;
   };
   prices: {
-    hourlyRate: string;
-    dailyRate: string;
+    hourlyRate: number;
+    dailyRate: number;
     monthlyPackages: boolean;
   };
   policies: {
@@ -88,8 +89,8 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
       electricCarCharging: false,
     },
     prices: {
-      hourlyRate: "",
-      dailyRate: "",
+      hourlyRate: 0,
+      dailyRate: 0,
       monthlyPackages: false,
     },
     policies: {
@@ -107,13 +108,6 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
   const [selectedState, setSelectedState] = useState<Estado | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const { enqueueSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    const first = () => {
-      console.log(formData);
-    };
-    return first;
-  }, [formData]);
 
   const handleStateChange = (event: any) => {
     const stateId = event.target.value as number;
@@ -171,7 +165,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
       ...prevData,
       prices: {
         ...prevData.prices,
-        [name]: nameRegex.test("monthlyPackages") ? checked : value,
+        [name]: nameRegex.test("monthlyPackages") ? checked : parseInt(value),
       },
     }));
   };
@@ -227,14 +221,11 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
   return (
     <Layout menuItems={adminMenuItems}>
       <form onSubmit={handleSubmit}>
-        <Grid
-          container
-          alignItems={"flex-end"}
-          justifyContent={"flex-start"}
-          spacing={3}
-        >
+        <Grid textAlign="center" container alignItems={"flex-end"} spacing={3}>
           <Grid item xs={12}>
-            <h1>Formulário de Cadastro de Estacionamento</h1>
+            <Typography style={{ marginTop: "16px" }} variant="h4">
+              Formulário de Cadastro de Estacionamento
+            </Typography>
           </Grid>
 
           <Grid item xs={12}>
@@ -541,11 +532,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
           </Grid>
 
           <Grid item xs={6}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
+            <Button variant="contained" color="primary" type="submit">
               Enviar
             </Button>
           </Grid>

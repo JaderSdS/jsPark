@@ -8,8 +8,6 @@ import Layout from "../../../components/Layout";
 export const adminMenuItems = [
   { label: "Adicionar Estacionamento", link: "/addEstacionamento" },
   { label: "Listar Estacionamentos", link: "/listEstacionamentos" },
-  { label: "Check In", link: "/checkIn" },
-  { label: "Check Out", link: "/checkOut" },
 ];
 export default function ParkingLotList() {
   const parkingLotRef = collection(fireDb, "estacionamentos");
