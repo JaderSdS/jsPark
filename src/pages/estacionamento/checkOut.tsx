@@ -14,7 +14,7 @@ import {
 import Layout from "../../components/Layout";
 import { ParkingTicket, estaMenus } from "./checkIn";
 import { parkingLotRef, ticketsRef } from "../../services/firebaseService";
-import { getDocs } from "firebase/firestore";
+import { doc, getDocs, setDoc } from "firebase/firestore";
 import { useSnackbar } from "notistack";
 import { ParkingLotInterface } from "../crud/parkingLot/ParkingLotCreateEdit";
 import { AuthContext } from "../../contexts/UserContext";
@@ -38,6 +38,7 @@ const CheckOutForm: React.FC = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setPlate(value);
+    setTicket(undefined);
   };
 
   //arrow function to find the parking lot
@@ -70,7 +71,6 @@ const CheckOutForm: React.FC = () => {
 
       if (permanenceTime > 5) {
         //retorna valor da diaria
-        debugger;
         return parkingLot.prices.dailyRate;
       }
       //valor a ser pago
@@ -89,7 +89,6 @@ const CheckOutForm: React.FC = () => {
   // };
 
   const handlePaymentMethodChange = (event: SelectChangeEvent<string>) => {
-    debugger;
     setPaymentMethod(event.target.value as string);
   };
 
@@ -102,22 +101,48 @@ const CheckOutForm: React.FC = () => {
       enqueueSnackbar("Informe uma placa válida", { variant: "error" });
       return;
     }
-
     const data = await getDocs(ticketsRef);
 
     let thisTicket = data.docs
       .map((doc) => doc.data())
       .filter((ticket) => {
-        return ticket.plate === plate;
+        return ticket.plate === plate && ticket.exitTime === 0;
       });
+    debugger;
     if (thisTicket.length > 0) {
-      //trasform DocumentData into ParkingTicket
-      setTicket(thisTicket[0] as ParkingTicket);
+      if (thisTicket[0].cnpj === parkingLot?.cnpj)
+        setTicket(thisTicket[0] as ParkingTicket);
+    } else {
+      enqueueSnackbar("Não foi encontrado nenhum ticket com essa placa", {
+        variant: "error",
+      });
     }
   };
 
   const formatDateTime = (date: any) => {
     return date.toISOString().slice(0, 16);
+  };
+
+  const handleCheckOut = async () => {
+    if (ticket) {
+      const ticketRef = doc(ticketsRef, ticket.id);
+      await setDoc(
+        ticketRef,
+        {
+          exitTime: exitTime.getTime(),
+          paymentMethod: paymentMethod,
+          value: calculateAmountPaid(),
+        },
+        { merge: true }
+      );
+      handleClear();
+      enqueueSnackbar("Saída registrada com sucesso", { variant: "success" });
+    }
+  };
+
+  const handleClear = () => {
+    setPlate("");
+    setTicket(undefined);
   };
 
   return (
@@ -272,7 +297,11 @@ const CheckOutForm: React.FC = () => {
             )}
 
             <Grid item xs={6} md={6} sm={12}>
-              <Button variant="contained" color="primary" onClick={() => {}}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleCheckOut}
+              >
                 Registrar Saída
               </Button>
             </Grid>

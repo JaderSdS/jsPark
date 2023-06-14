@@ -8,12 +8,16 @@ import {
   Typography,
 } from "@mui/material";
 import Layout from "../../components/Layout";
-import { setDoc, doc, collection, getDocs } from "firebase/firestore";
-import { fireDb, parkingLotRef, ticketsRef } from "../../services/firebaseService";
+import { setDoc, doc, getDocs } from "firebase/firestore";
+import {
+  fireDb,
+  parkingLotRef,
+  ticketsRef,
+} from "../../services/firebaseService";
 import { AuthContext } from "../../contexts/UserContext";
 import { closeSnackbar, useSnackbar } from "notistack";
 import QRCode from "react-qr-code";
-import { CloseOutlined, ClosedCaption, Print } from "@mui/icons-material";
+import { CloseOutlined, Print } from "@mui/icons-material";
 
 interface ParkingFormProps {
   onSubmit: (formData: ParkingTicket) => void;
@@ -24,6 +28,7 @@ export const estaMenus = [
 ];
 
 export interface ParkingTicket {
+  id: string;
   cnpj: string;
   plate: string;
   services: string[];
@@ -130,6 +135,11 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
       return;
     }
 
+    if (await checkIfDuplicatedPlate()) {
+      enqueueSnackbar("Placa já cadastrada", { variant: "error" });
+      return;
+    }
+
     const formData: ParkingTicket = {
       entryTime: Date.now(),
       plate,
@@ -139,9 +149,10 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
       exitTime: 0,
       paymentMethod: "",
       value: 0,
+      id: await getLastTicket(),
     };
 
-    await setDoc(doc(fireDb, "tickets", await getLastTicket()), formData);
+    await setDoc(doc(fireDb, "tickets", formData.id), formData);
 
     const style = {
       alignItems: "center",
@@ -193,7 +204,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
           </Grid>
         </div>
       </Grid>,
-      { action, persist: true }
+      { action, autoHideDuration: 10000 }
     );
 
     setColor("");
@@ -218,20 +229,27 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     return bigger.toString();
   };
 
-  //   const tk = {
-  //     id: 35,
-  //     cnpj: 12345678911,
-  //     horaEntrada: Date.now(),
-  //     horaSaida: null,
-  //     placa: "abc-1234",
-  //     servicoAdicional: ["Lavagem"],
-  //   };
-  //  <QRCode value={JSON.stringify(tk)} size={150} />
+  const checkIfDuplicatedPlate = async () => {
+    const data = await getDocs(ticketsRef);
+    let allTickets = data.docs.map((doc) => doc.data());
+    let duplicatedPlate = allTickets.filter(
+      (ticket) => ticket.plate === plate && ticket.exitTime === 0
+    );
+    if (duplicatedPlate.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <Layout menuItems={estaMenus}>
-      <Typography variant="h4">Registrar entrada</Typography>
       <Grid container spacing={2}>
+        <Grid item xs={6} md={12} sm={12}>
+          <Typography style={{ marginTop: "16px" }} variant="h4">
+            Registrar entrada
+          </Typography>
+        </Grid>
         <Grid item xs={12} md={6} sm={12}>
           <TextField
             label="Placa"
