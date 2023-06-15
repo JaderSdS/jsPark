@@ -9,7 +9,6 @@ import { Email, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { fireAuth } from "../../services/firebaseService";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import QRCode from "react-qr-code";
 import { useSnackbar } from "notistack";
 
 export default function LoginEsta() {
@@ -30,32 +29,21 @@ export default function LoginEsta() {
   const handleLogin = () => {
     signInWithEmailAndPassword(fireAuth, email, password)
       .then((userCredential) => {
-        // Signed in
-        //const user = userCredential.user;
         enqueueSnackbar("Bem vindo novamente", { variant: "success" });
-        navigate("AdmLoged");
-        // ...
+        navigate("/createTicket");
       })
       .catch((error) => {
+        if (error.code === "auth/user-not-found")
+          enqueueSnackbar("Usuário não encontrado", { variant: "error" });
+        if (error.code === "auth/wrong-password")
+          enqueueSnackbar("Senha incorreta", { variant: "error" });
+        if (error.code === "auth/invalid-email")
+          enqueueSnackbar("Email inválido", { variant: "error" });
+
         enqueueSnackbar("Erro ao logar", { variant: "error" });
-        //const errorCode = error.code;
-        //const errorMessage = error.message;
       });
   };
 
-  function handleCreate() {
-    
-  }
-
-  //   const tk = {
-  //     id: 35,
-  //     cnpj: 12345678911,
-  //     horaEntrada: Date.now(),
-  //     horaSaida: null,
-  //     placa: "abc-1234",
-  //     servicoAdicional: ["Lavagem"],
-  //   };
-  //  <QRCode value={JSON.stringify(tk)} size={150} />
   return (
     <Box
       sx={{
@@ -147,7 +135,7 @@ export default function LoginEsta() {
                 style={{ margin: "10px" }}
                 variant="contained"
                 onClick={() => {
-                  handleCreate();
+                  navigate("/createUser");
                 }}
               >
                 Criar conta

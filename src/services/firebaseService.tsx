@@ -27,4 +27,5 @@ export const fireDb = getFirestore(firebaseApp);
 
 export const parkingLotRef = collection(fireDb, "estacionamentos");
 export const ticketsRef = collection(fireDb, "tickets");
+export const usersRef = collection(fireDb, "usuarios");
 

@@ -2,7 +2,7 @@ import { SnackbarProvider } from "notistack";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LoginAdm from "./pages/login/LoginAdm";
 import LoginEsta from "./pages/login/LoginEsta";
-import LoginUsu from "./pages/login/LoginUsu";
+import LoginUsuario from "./pages/login/LoginUsuario";
 import ParkingLotList from "./pages/crud/parkingLot/ParkingLotList";
 import ParkingForm from "./pages/crud/parkingLot/ParkingLotCreateEdit";
 import CheckInForm from "./pages/estacionamento/checkIn";
@@ -12,6 +12,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { fireAuth } from "./services/firebaseService";
 import NotFound from "./pages/notFound";
 import { AuthProvider } from "./contexts/UserContext";
+import { CreateUser } from "./pages/userPages/CreateUser";
+import { CreateTicket } from "./pages/userPages/CreateTicket";
 
 function App() {
   const [isLogged, setIsLogged] = useState(false);
@@ -58,10 +60,14 @@ function App() {
               />
               <Route path="/listEstacionamentos" element={<ParkingLotList />} />
               <Route path="/" element={<LoginAdm />} />
-              <Route path="/LoginUsu" element={<LoginUsu />} />
+              <Route path="/LoginUsuario" element={<LoginUsuario />} />
               <Route path="/MeuEstacionamento" element={<LoginEsta />} />
               <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<Navigate to={"/404"} />} />
+
+              <Route path="/createUser" element={<CreateUser />} />
+              <Route path="/createTicket" element={<CreateTicket />} />
+              
             </Routes>
           </BrowserRouter>
         </SnackbarProvider>

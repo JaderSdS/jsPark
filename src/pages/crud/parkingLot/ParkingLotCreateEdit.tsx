@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Grid,
   TextField,
@@ -66,7 +66,7 @@ export interface ParkingLotInterface {
   };
 }
 
-const states: Estado[] = estadosCidades.estados;
+export const states: Estado[] = estadosCidades.estados;
 
 const ParkingForm: React.FC<ParkingFormProps> = () => {
   const emptyData = {
@@ -231,7 +231,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
           <Grid item xs={12}>
             <h3>Informações Gerais:</h3>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <TextField
               name="name"
               label="Nome do Estacionamento"
@@ -240,7 +240,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <TextField
               inputProps={{ maxLength: 14 }}
               name="cnpj"
@@ -250,7 +250,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <TextField
               name="email"
               label="E-mail"
@@ -259,7 +259,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <TextField
               name="address"
               label="Endereço"
@@ -268,7 +268,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <TextField
               inputProps={{ maxLength: 11 }}
               name="phone"
@@ -278,7 +278,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <TextField
               name="zipCode"
               label="CEP"
@@ -288,7 +288,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <InputLabel>Estado</InputLabel>
             <Select
               fullWidth
@@ -302,7 +302,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
               ))}
             </Select>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={12}>
             <InputLabel>Cidade</InputLabel>
             <Select
               fullWidth
@@ -335,10 +335,10 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
             "Domingo",
           ].map((day) => (
             <React.Fragment key={day}>
-              <Grid item xs={12} sm={1}>
+              <Grid item xs={12} sm={12}>
                 <h4>{day}</h4>
               </Grid>
-              <Grid item xs={6} sm={1}>
+              <Grid item xs={6} sm={12}>
                 <TextField
                   name={`${day}.openingTime`}
                   label="Abertura"
@@ -349,7 +349,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6} sm={1}>
+              <Grid item xs={6} sm={12}>
                 <TextField
                   inputProps={{ maxLength: 5 }}
                   name={`${day}.closingTime`}

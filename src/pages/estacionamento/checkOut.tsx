@@ -108,7 +108,6 @@ const CheckOutForm: React.FC = () => {
       .filter((ticket) => {
         return ticket.plate === plate && ticket.exitTime === 0;
       });
-    debugger;
     if (thisTicket.length > 0) {
       if (thisTicket[0].cnpj === parkingLot?.cnpj)
         setTicket(thisTicket[0] as ParkingTicket);
@@ -222,7 +221,7 @@ const CheckOutForm: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={2} md={2} sm={2}>
+            <Grid item xs={2} md={2} sm={12}>
               <InputLabel id="payment-method-label">
                 Forma de Pagamento
               </InputLabel>

@@ -44,6 +44,47 @@ interface item {
   value: string;
 }
 
+export const getLastTicket = async () => {
+  const data = await getDocs(ticketsRef);
+
+  let allTickets = data.docs.map((doc) => doc.id);
+
+  var bigger = Number(allTickets[0]);
+
+  for (var i = 1; i < allTickets.length; i++) {
+    var actualNumber = Number(allTickets[i]);
+
+    if (actualNumber > bigger) {
+      bigger = actualNumber;
+    }
+  }
+  bigger += 1;
+  return bigger.toString();
+};
+
+export const checkIfDuplicatedPlate = async (plate: string) => {
+  const data = await getDocs(ticketsRef);
+  let allTickets = data.docs.map((doc) => doc.data());
+  let duplicatedPlate = allTickets.filter(
+    (ticket) => ticket.plate === plate && ticket.exitTime === 0
+  );
+  if (duplicatedPlate.length > 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const allServices = {
+  wifi: "Wi-fi",
+  security: "Segurança",
+  coveredParking: "Estacionamento coberto",
+  disabledParking: "Estacionamento para deficientes",
+  carWash: "Lavagem de carro",
+  valetService: "Manobrista",
+  electricCarCharging: "Carregamento de carro elétrico",
+};
+
 const CheckInForm: React.FC<ParkingFormProps> = () => {
   const [plate, setPlate] = useState("");
 
@@ -58,16 +99,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
   const [parkingLot, setParkingLot] = useState<any>();
 
   const [parkingLotServices, setParkingLotServices] = useState<item[]>([]); // [ {name: "Lavagem", price: 10}, {name: "Lavagem", price: 10}
-
-  const allServices = {
-    wifi: "Wi-fi",
-    security: "Segurança",
-    coveredParking: "Estacionamento coberto",
-    disabledParking: "Estacionamento para deficientes",
-    carWash: "Lavagem de carro",
-    valetService: "Manobrista",
-    electricCarCharging: "Carregamento de carro elétrico",
-  };
 
   const getParkingLotCnpj = async () => {
     const data = await getDocs(parkingLotRef);
@@ -135,7 +166,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
       return;
     }
 
-    if (await checkIfDuplicatedPlate()) {
+    if (await checkIfDuplicatedPlate(plate)) {
       enqueueSnackbar("Placa já cadastrada", { variant: "error" });
       return;
     }
@@ -209,37 +240,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
 
     setColor("");
     setPlate("");
-  };
-
-  const getLastTicket = async () => {
-    const data = await getDocs(ticketsRef);
-
-    let allTickets = data.docs.map((doc) => doc.id);
-
-    var bigger = Number(allTickets[0]);
-
-    for (var i = 1; i < allTickets.length; i++) {
-      var actualNumber = Number(allTickets[i]);
-
-      if (actualNumber > bigger) {
-        bigger = actualNumber;
-      }
-    }
-    bigger += 1;
-    return bigger.toString();
-  };
-
-  const checkIfDuplicatedPlate = async () => {
-    const data = await getDocs(ticketsRef);
-    let allTickets = data.docs.map((doc) => doc.data());
-    let duplicatedPlate = allTickets.filter(
-      (ticket) => ticket.plate === plate && ticket.exitTime === 0
-    );
-    if (duplicatedPlate.length > 0) {
-      return true;
-    } else {
-      return false;
-    }
   };
 
   return (
