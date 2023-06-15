@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Layout from "../../components/Layout";
-import { ParkingTicket, estaMenus } from "../estacionamento/checkIn";
+import {
+  ParkingTicket,
+  allServices,
+  estaMenus,
+} from "../estacionamento/checkIn";
 import {
   fireDb,
   parkingLotRef,
@@ -29,6 +33,7 @@ import {
   states,
 } from "../crud/parkingLot/ParkingLotCreateEdit";
 import { useNavigate } from "react-router-dom";
+import { debug } from "util";
 export const CreateTicket: React.FC = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -43,6 +48,7 @@ export const CreateTicket: React.FC = () => {
   );
   const [selectedParkingLot, setSelectedParkingLot] =
     useState<ParkingLotInterface | null>(null);
+  const [parkingLotServices, setParkingLotServices] = useState<string[]>([]);
 
   useEffect(() => {
     findUser()
@@ -89,7 +95,6 @@ export const CreateTicket: React.FC = () => {
     const data = await getDocs(parkingLotRef);
     const parkingLots = data.docs.map((doc) => doc.data());
     const parkingLot = parkingLots.filter((parkingLot) => {
-      debugger;
       if (
         parkingLot.city === selectedCity?.id &&
         parkingLot.state === selectedState?.id
@@ -105,16 +110,14 @@ export const CreateTicket: React.FC = () => {
 
   return (
     <Layout menuItems={userMenus}>
-      <Grid container spacing={2}>
+      <Grid container direction="column" alignItems="center" spacing={2}>
         <Grid item xs={12} sm={12} md={6}>
           <Typography style={{ marginTop: "16px" }} variant="h4">
             Criar ticket
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          Lista de carros
-        </Grid>
-        <Grid item xs={12} md={6} sm={12}>
+        <Grid item>Lista de carros</Grid>
+        <Grid item sx={{ minWidth: "300px" }}>
           <InputLabel>Estado</InputLabel>
           <Select
             fullWidth
@@ -128,7 +131,7 @@ export const CreateTicket: React.FC = () => {
             ))}
           </Select>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid item sx={{ minWidth: "300px" }}>
           <InputLabel>Cidade</InputLabel>
           <Select
             fullWidth
@@ -149,7 +152,7 @@ export const CreateTicket: React.FC = () => {
           </Select>
         </Grid>
         {parkingLots && parkingLots.length > 0 ? (
-          <Grid item xs={12} sm={12} md={12}>
+          <Grid item sx={{ minWidth: "300px" }}>
             <InputLabel>Estacionamento</InputLabel>
             <Select
               fullWidth
@@ -159,6 +162,17 @@ export const CreateTicket: React.FC = () => {
                   (parkingLot) => parkingLot.cnpj === event.target.value
                 );
                 setSelectedParkingLot(parkingLot!);
+                let services: string[] = [];
+                Object.keys(parkingLot!.services).map((key: any) => {
+                  if (
+                    parkingLot!.services[key as keyof typeof allServices] ===
+                    true
+                  ) {
+                    services.push(allServices[key as keyof typeof allServices]);
+                  }
+                  return null;
+                });
+                setParkingLotServices(services);
               }}
             >
               {parkingLots.map((parkingLot) => (
@@ -169,7 +183,7 @@ export const CreateTicket: React.FC = () => {
             </Select>
           </Grid>
         ) : (
-          <Grid item xs={12} sm={12} md={12}>
+          <Grid item sx={{ minWidth: "300px" }}>
             <Button
               onClick={() => handleFindParkingLot()}
               variant="contained"
@@ -180,14 +194,89 @@ export const CreateTicket: React.FC = () => {
           </Grid>
         )}
         {selectedParkingLot && (
-          <Grid item xs={12} sm={12} md={12}>
-            <Typography variant="body1">{selectedParkingLot.name}</Typography>
-            <Typography variant="body1">{selectedParkingLot.cnpj}</Typography>
-            <Typography variant="body1">
-              {selectedParkingLot.address}
+          <Grid
+            item
+            sx={{ minWidth: "300px", margin: "8px 8px 8px 16px" }}
+            bgcolor={"#D9D9D9"}
+          >
+            <Typography variant="body1" sx={{ margin: "4px" }}>
+              <strong>Informações do estacionamento</strong>
             </Typography>
-            <Typography variant="body1">{selectedParkingLot.city}</Typography>
-            <Typography variant="body1">{selectedParkingLot.state}</Typography>
+            <Typography variant="body1" sx={{ margin: "4px" }}>
+              <strong>Endereço:</strong> {selectedParkingLot.address} -{" "}
+              {selectedCity?.nome}
+            </Typography>
+            {/* [] TODO PREENCHER VAGAS DISPONIVEIS */}
+            <Typography variant="body1" sx={{ margin: "4px" }}>
+              <strong>Vagas disponíveis</strong> : 1111 : 1111
+            </Typography>
+            {parkingLotServices.length > 0 && (
+              <Typography variant="body1" sx={{ margin: "4px" }}>
+                <strong>Serviços:</strong> {parkingLotServices.join(", ")}
+              </Typography>
+            )}
+            {/** Tabela de preços preenchida com valor do selectedParkingLot.prices*/}
+            <Typography variant="body1" sx={{ margin: "4px" }}>
+              <strong>Tabela de preços:</strong>
+            </Typography>
+            <Grid
+              container
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              columns={{ xs: 4, sm: 4, md: 4 }}
+            >
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  até 1 hora:
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  R$ {selectedParkingLot.prices.hourlyRate.toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  até 2 horas:
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  R$ {(selectedParkingLot.prices.hourlyRate * 2).toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  até 3 horas:
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  R$ {(selectedParkingLot.prices.hourlyRate * 3).toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  até 4 horas:
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  R$ {(selectedParkingLot.prices.hourlyRate * 4).toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  Diária:
+                </Typography>
+              </Grid>
+              <Grid item xs={2} sm={2} md={2}>
+                <Typography variant="body1" sx={{ margin: "4px" }}>
+                  R$ {selectedParkingLot.prices.dailyRate.toFixed(2)}
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
         )}
       </Grid>

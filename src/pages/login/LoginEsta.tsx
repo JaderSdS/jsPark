@@ -80,7 +80,7 @@ export default function LoginEsta() {
               Entre com o email e senha do seu estacionamento
             </Typography>
             <FormControl
-              sx={{ m: 1, width: "30%", marginTop: "36px" }}
+              sx={{ m: 1, width: "80%", marginTop: "36px" }}
               variant="outlined"
             >
               <InputLabel htmlFor="outlined-adornment-password">
@@ -99,7 +99,7 @@ export default function LoginEsta() {
                 }
               />
             </FormControl>
-            <FormControl sx={{ m: 1, width: "30%" }} variant="outlined">
+            <FormControl sx={{ m: 1, width: "80%" }} variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">
                 Password
               </InputLabel>
