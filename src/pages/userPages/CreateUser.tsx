@@ -1,8 +1,6 @@
 import { useSnackbar } from "notistack";
-import Layout from "../../components/Layout";
 import { useState } from "react";
 import {
-  Box,
   Button,
   Grid,
   IconButton,
@@ -14,15 +12,9 @@ import {
   Typography,
 } from "@mui/material";
 import { Estado, City, states } from "../crud/parkingLot/ParkingLotCreateEdit";
-import { getDocs, collection, setDoc, doc } from "firebase/firestore";
+import { getDocs, setDoc, doc } from "firebase/firestore";
 import { fireAuth, fireDb, usersRef } from "../../services/firebaseService";
-import {
-  Badge,
-  Email,
-  Password,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
+import { Badge, Email, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -37,7 +29,7 @@ export interface UserProps {
 export const userMenus = [
   { label: "Gerar ticket", link: "/createTicket" },
   { label: "Histórico", link: "/ticketsHistory" },
-  { label: "Perfil", link: "/editUser" },
+  { label: "Perfil", link: "/userProfile" },
 ];
 
 export const CreateUser: React.FC = () => {

@@ -3,7 +3,9 @@ import Layout from "../../components/Layout";
 import {
   ParkingTicket,
   allServices,
+  checkIfDuplicatedPlate,
   estaMenus,
+  getLastTicket,
 } from "../estacionamento/checkIn";
 import {
   fireDb,
@@ -25,7 +27,7 @@ import {
 } from "@mui/material";
 import { AuthContext } from "../../contexts/UserContext";
 import { useContext, useEffect, useState } from "react";
-import { getDocs } from "firebase/firestore";
+import { doc, getDocs, setDoc } from "firebase/firestore";
 import {
   City,
   Estado,
@@ -33,9 +35,9 @@ import {
   states,
 } from "../crud/parkingLot/ParkingLotCreateEdit";
 import { useNavigate } from "react-router-dom";
-import { debug } from "util";
+import { CarInterface } from "./CreateCar";
+import { getUserCars } from "./UserProfile";
 export const CreateTicket: React.FC = () => {
-  //[]TODO GERAR O TICKET
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const contextUser = useContext(AuthContext);
@@ -50,6 +52,8 @@ export const CreateTicket: React.FC = () => {
   const [selectedParkingLot, setSelectedParkingLot] =
     useState<ParkingLotInterface | null>(null);
   const [parkingLotServices, setParkingLotServices] = useState<string[]>([]);
+  const [selectedCar, setSelectedCar] = useState<CarInterface | null>(null);
+  const [userCars, setUserCars] = useState<CarInterface[]>([]);
 
   useEffect(() => {
     findUser()
@@ -59,6 +63,12 @@ export const CreateTicket: React.FC = () => {
         setSelectedState(state!);
         const city = state?.cidades.find((city) => user?.city === city.id);
         setSelectedCity(city!);
+
+        const getCars = async () => {
+          const cars = await getUserCars(contextUser?.uid || "");
+          setUserCars(cars as CarInterface[]);
+        };
+        getCars();
       })
       .catch((error) => {
         enqueueSnackbar("Erro ao encontrar usuário", { variant: "error" });
@@ -83,6 +93,7 @@ export const CreateTicket: React.FC = () => {
     setSelectedCity(null);
     setState(stateId);
   };
+
   const handleCityChange = (event: any) => {
     const cityId = event.target.value as number;
     const city = selectedState?.cidades.find((city) => cityId === city.id);
@@ -109,6 +120,28 @@ export const CreateTicket: React.FC = () => {
     }
   };
 
+  const handleCreateTicket = async () => {
+    if (await checkIfDuplicatedPlate(selectedCar!.plate)) {
+      enqueueSnackbar("Já existe um ticket para esse carro", {
+        variant: "error",
+      });
+    } else {
+      await getLastTicket();
+      const ticket: ParkingTicket = {
+        plate: selectedCar!.plate,
+        entryTime: new Date().getTime(),
+        exitTime: 0,
+        id: "",
+        cnpj: "",
+        services: [],
+        color: "",
+        paymentMethod: "",
+        value: 0,
+      };
+      await setDoc(doc(ticketsRef), ticket);
+      enqueueSnackbar("Ticket gerado com sucesso", { variant: "success" });
+    }
+  };
   return (
     <Layout menuItems={userMenus}>
       <Grid container direction="column" alignItems="center" spacing={2}>
@@ -117,7 +150,24 @@ export const CreateTicket: React.FC = () => {
             Criar ticket
           </Typography>
         </Grid>
-        <Grid item>Lista de carros</Grid>
+        <Grid item sx={{ minWidth: "300px" }}>
+          <InputLabel>Carro</InputLabel>
+          <Select
+            fullWidth
+            value={selectedCar?.id || ""}
+            onChange={(event) => {
+              const car = userCars.find((car) => car.id === event.target.value);
+              setSelectedCar(car!);
+            }}
+          >
+            {userCars.map((car) => (
+              <MenuItem key={car.id} value={car.id}>
+                {car.plate}
+              </MenuItem>
+            ))}
+          </Select>
+        </Grid>
+
         <Grid item sx={{ minWidth: "300px" }}>
           <InputLabel>Estado</InputLabel>
           <Select
@@ -277,6 +327,23 @@ export const CreateTicket: React.FC = () => {
                   R$ {selectedParkingLot.prices.dailyRate.toFixed(2)}
                 </Typography>
               </Grid>
+            </Grid>
+            <Grid
+              item
+              sx={{
+                width: "100%",
+                display: "flex",
+                marginTop: "16px",
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                onClick={() => handleCreateTicket()}
+                variant="contained"
+                color="primary"
+              >
+                Gerar
+              </Button>
             </Grid>
           </Grid>
         )}

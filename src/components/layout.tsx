@@ -57,7 +57,7 @@ const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
           </Toolbar>
         </AppBar>
         <Grid container justifyContent="flex-start">
-          <Grid item xs={12}>
+          <Grid item xs={11}>
             {children}
           </Grid>
         </Grid>

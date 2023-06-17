@@ -14,6 +14,8 @@ import NotFound from "./pages/notFound";
 import { AuthProvider } from "./contexts/UserContext";
 import { CreateUser } from "./pages/userPages/CreateUser";
 import { CreateTicket } from "./pages/userPages/CreateTicket";
+import { CreateCar } from "./pages/userPages/CreateCar";
+import { UserProfile } from "./pages/userPages/UserProfile";
 
 function App() {
   const [isLogged, setIsLogged] = useState(false);
@@ -67,7 +69,13 @@ function App() {
 
               <Route path="/createUser" element={<CreateUser />} />
               <Route path="/createTicket" element={<CreateTicket />} />
+              {/** Criar methodo para buscar o ticket automaticamente */}
+              <Route path="/createTicket/:id" element={<CreateTicket />} />
+
+              <Route path="/createCar" element={<CreateCar />} />
+              <Route path="/editCar/:id" element={<CreateCar />} />
               
+              <Route path="/userProfile" element={<UserProfile />} />
             </Routes>
           </BrowserRouter>
         </SnackbarProvider>
