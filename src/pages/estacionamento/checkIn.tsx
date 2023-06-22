@@ -37,6 +37,7 @@ export interface ParkingTicket {
   exitTime: number;
   paymentMethod: string;
   value: number;
+  status: "Open" | "Closed" | "Canceled";
 }
 
 interface item {
@@ -66,7 +67,7 @@ export const checkIfDuplicatedPlate = async (plate: string) => {
   const data = await getDocs(ticketsRef);
   let allTickets = data.docs.map((doc) => doc.data());
   let duplicatedPlate = allTickets.filter(
-    (ticket) => ticket.plate === plate && ticket.exitTime === 0
+    (ticket) => ticket.plate === plate && ticket.status === "Open"
   );
   if (duplicatedPlate.length > 0) {
     return true;
@@ -131,7 +132,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
   const handlePlateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     const sanitizedValue = value.slice(0, 7).replace(/[^a-zA-Z0-9]/g, "");
-    setPlate(sanitizedValue);
+    setPlate(sanitizedValue.toUpperCase());
   };
 
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,6 +182,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
       paymentMethod: "",
       value: 0,
       id: await getLastTicket(),
+      status: "Open",
     };
 
     await setDoc(doc(fireDb, "tickets", formData.id), formData);

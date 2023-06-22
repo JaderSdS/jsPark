@@ -14,7 +14,7 @@ import {
 import Layout from "../../components/Layout";
 import { ParkingTicket, estaMenus } from "./checkIn";
 import { parkingLotRef, ticketsRef } from "../../services/firebaseService";
-import { doc, getDocs, setDoc } from "firebase/firestore";
+import { doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { useSnackbar } from "notistack";
 import { ParkingLotInterface } from "../crud/parkingLot/ParkingLotCreateEdit";
 import { AuthContext } from "../../contexts/UserContext";
@@ -60,9 +60,7 @@ const CheckOutForm: React.FC = () => {
 
   const calculateAmountPaid = (): number => {
     if (ticket && parkingLot) {
-      //hora de entrada
       const entryTime = ticket.entryTime;
-      //tempo de permanencia em horas
       const permanenceTime = (exitTime.getTime() - entryTime) / 3600000;
 
       if (permanenceTime < 1) {
@@ -70,23 +68,13 @@ const CheckOutForm: React.FC = () => {
       }
 
       if (permanenceTime > 5) {
-        //retorna valor da diaria
         return parkingLot.prices.dailyRate;
       }
-      //valor a ser pago
       const amountPaid = permanenceTime * parkingLot.prices.hourlyRate;
       return amountPaid;
     }
     return 0;
   };
-
-  // const calculateChange = (amountPaid: number): number => {
-  //   // Lógica para calcular o troco com base no valor pago e no total a ser pago
-
-  //   const totalAmount = 0; // Defina o valor total a ser pago
-
-  //   return amountPaid - totalAmount;
-  // };
 
   const handlePaymentMethodChange = (event: SelectChangeEvent<string>) => {
     setPaymentMethod(event.target.value as string);
@@ -101,13 +89,14 @@ const CheckOutForm: React.FC = () => {
       enqueueSnackbar("Informe uma placa válida", { variant: "error" });
       return;
     }
-    const data = await getDocs(ticketsRef);
 
-    let thisTicket = data.docs
-      .map((doc) => doc.data())
-      .filter((ticket) => {
-        return ticket.plate === plate && ticket.exitTime === 0;
-      });
+    const ticketQuery = query(
+      ticketsRef,
+      where("plate", "==", plate.toUpperCase()),
+      where("status", "==", "Open")
+    );
+    const data = await getDocs(ticketQuery);
+    let thisTicket = data.docs.map((doc) => doc.data());
     if (thisTicket.length > 0) {
       if (thisTicket[0].cnpj === parkingLot?.cnpj)
         setTicket(thisTicket[0] as ParkingTicket);
@@ -128,6 +117,7 @@ const CheckOutForm: React.FC = () => {
       await setDoc(
         ticketRef,
         {
+          status: "Closed",
           exitTime: exitTime.getTime(),
           paymentMethod: paymentMethod,
           value: calculateAmountPaid(),

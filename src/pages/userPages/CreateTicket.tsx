@@ -1,10 +1,10 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Layout from "../../components/Layout";
 import {
   ParkingTicket,
   allServices,
   checkIfDuplicatedPlate,
-  estaMenus,
   getLastTicket,
 } from "../estacionamento/checkIn";
 import {
@@ -16,7 +16,7 @@ import {
 import { closeSnackbar, useSnackbar } from "notistack";
 import QRCode from "react-qr-code";
 import { CloseOutlined, Print } from "@mui/icons-material";
-import { UserProps, userMenus } from "./CreateUser";
+import { userMenus } from "./CreateUser";
 import {
   Button,
   Grid,
@@ -41,11 +41,8 @@ export const CreateTicket: React.FC = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const contextUser = useContext(AuthContext);
-  const [parkingUser, setParkingUser] = useState<UserProps | null>(null);
   const [selectedState, setSelectedState] = useState<Estado | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
-  const [state, setState] = useState(0);
-  const [city, setCity] = useState(0);
   const [parkingLots, setParkingLots] = useState<ParkingLotInterface[] | null>(
     null
   );
@@ -58,7 +55,6 @@ export const CreateTicket: React.FC = () => {
   useEffect(() => {
     findUser()
       .then((user) => {
-        setParkingUser(user as UserProps);
         const state = states.find((state) => user?.state === state.id);
         setSelectedState(state!);
         const city = state?.cidades.find((city) => user?.city === city.id);
@@ -91,14 +87,12 @@ export const CreateTicket: React.FC = () => {
     const state = states.find((state) => stateId === state.id);
     setSelectedState(state || null);
     setSelectedCity(null);
-    setState(stateId);
   };
 
   const handleCityChange = (event: any) => {
     const cityId = event.target.value as number;
     const city = selectedState?.cidades.find((city) => cityId === city.id);
     setSelectedCity(city || null);
-    setCity(cityId);
   };
 
   const handleFindParkingLot = async () => {
@@ -120,28 +114,88 @@ export const CreateTicket: React.FC = () => {
     }
   };
 
+  const handlePrint = () => {
+    const conteudo = document.getElementById("conteudo-impressao");
+    if (conteudo) {
+      const janelaImprimir = window.open("", "_blank");
+      janelaImprimir?.document.write(conteudo.innerHTML);
+      janelaImprimir?.document.close();
+      janelaImprimir?.print();
+    }
+  };
+
   const handleCreateTicket = async () => {
     if (await checkIfDuplicatedPlate(selectedCar!.plate)) {
       enqueueSnackbar("Já existe um ticket para esse carro", {
         variant: "error",
       });
     } else {
-      await getLastTicket();
       const ticket: ParkingTicket = {
         plate: selectedCar!.plate,
         entryTime: new Date().getTime(),
         exitTime: 0,
-        id: "",
-        cnpj: "",
+        id: await getLastTicket(),
+        cnpj: selectedParkingLot!.cnpj.toString(),
         services: [],
-        color: "",
+        color: selectedCar!.color,
         paymentMethod: "",
         value: 0,
+        status: "Open",
       };
-      await setDoc(doc(ticketsRef), ticket);
-      enqueueSnackbar("Ticket gerado com sucesso", { variant: "success" });
+      await setDoc(doc(fireDb, "tickets", ticket.id), ticket).then((docRef) => {
+        const action = (snackbarId: any) => (
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handlePrint}
+              id="btnImprimir"
+            >
+              <Print />
+            </Button>
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={() => closeSnackbar(snackbarId)}
+              id="btnFechar"
+            >
+              <CloseOutlined />
+            </Button>
+          </>
+        );
+        const style = {
+          alignItems: "center",
+          justifyContent: "center",
+        };
+        enqueueSnackbar(
+          <Grid container spacing={2}>
+            <Grid item style={style} sm={12} md={12}>
+              <Typography variant="h6"> Ticket gerado com sucesso </Typography>
+            </Grid>
+            <div id="conteudo-impressao">
+              <Grid item style={style} sm={12} md={12}>
+                <QRCode value={JSON.stringify(ticket)} size={150} />
+              </Grid>
+              <Grid item style={style} sm={12} md={12}>
+                Placa: {ticket.plate}
+              </Grid>
+              <Grid item style={style} sm={12} md={12}>
+                Entrada: {new Date(ticket.entryTime).toLocaleString()}
+              </Grid>
+              <Grid item style={style} sm={12} md={12}>
+                Cor: {ticket.color}
+              </Grid>
+              <Grid item style={style} sm={12} md={12}>
+                Cnpj: {selectedParkingLot!.cnpj}
+              </Grid>
+            </div>
+          </Grid>,
+          { action, autoHideDuration: 10000 }
+        );
+      });
     }
   };
+
   return (
     <Layout menuItems={userMenus}>
       <Grid container direction="column" alignItems="center" spacing={2}>
