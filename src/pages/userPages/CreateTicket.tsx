@@ -28,15 +28,15 @@ import {
 import { AuthContext } from "../../contexts/UserContext";
 import { useContext, useEffect, useState } from "react";
 import { doc, getDocs, setDoc } from "firebase/firestore";
-import {
-  City,
-  Estado,
-  ParkingLotInterface,
-  states,
-} from "../crud/parkingLot/ParkingLotCreateEdit";
 import { useNavigate } from "react-router-dom";
 import { CarInterface } from "./CreateCar";
 import { getUserCars } from "./UserProfile";
+import {
+  Estado,
+  City,
+  ParkingLotInterface,
+  states,
+} from "../administrador/ParkingLotCreateEdit";
 export const CreateTicket: React.FC = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();

@@ -10,13 +10,13 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import {
-  ParkingLotInterface,
-  Estado,
-} from "../pages/crud/parkingLot/ParkingLotCreateEdit";
 import estadosCidades from "../services/estadosCidades.json";
 import { collection, deleteDoc, doc } from "firebase/firestore";
 import { fireDb } from "../services/firebaseService";
+import {
+  ParkingLotInterface,
+  Estado,
+} from "../pages/administrador/ParkingLotCreateEdit";
 interface ParkingListProps {
   formData: ParkingLotInterface[];
   update: Function;

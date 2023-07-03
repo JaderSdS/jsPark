@@ -7,7 +7,6 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import Layout from "../../components/Layout";
 import { setDoc, doc, getDocs } from "firebase/firestore";
 import {
   fireDb,
@@ -18,7 +17,7 @@ import { AuthContext } from "../../contexts/UserContext";
 import { closeSnackbar, useSnackbar } from "notistack";
 import QRCode from "react-qr-code";
 import { CloseOutlined, Print } from "@mui/icons-material";
-
+import Layout from "../../components/Layout";
 interface ParkingFormProps {
   onSubmit: (formData: ParkingTicket) => void;
 }

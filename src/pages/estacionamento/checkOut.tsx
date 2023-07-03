@@ -16,7 +16,6 @@ import { ParkingTicket, estaMenus } from "./checkIn";
 import { parkingLotRef, ticketsRef } from "../../services/firebaseService";
 import { doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { useSnackbar } from "notistack";
-import { ParkingLotInterface } from "../crud/parkingLot/ParkingLotCreateEdit";
 import { AuthContext } from "../../contexts/UserContext";
 import {
   AccessTime,
@@ -24,6 +23,7 @@ import {
   DirectionsCar,
   SwipeDownAlt,
 } from "@mui/icons-material";
+import { ParkingLotInterface } from "../administrador/ParkingLotCreateEdit";
 
 const CheckOutForm: React.FC = () => {
   const user = useContext(AuthContext);

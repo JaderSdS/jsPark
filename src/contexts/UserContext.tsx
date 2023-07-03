@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Monitorar alterações no estado de autenticação do Firebase
     const unsubscribe = fireAuth.onAuthStateChanged((user) => {
       setCurrentUser(user);
       return () => {
@@ -18,7 +17,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       };
     });
 
-    // Cancelar a inscrição ao desmontar o componente
     return () => {
       unsubscribe();
     };

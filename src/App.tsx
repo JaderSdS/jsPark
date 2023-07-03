@@ -1,10 +1,8 @@
 import { SnackbarProvider } from "notistack";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import LoginAdm from "./pages/login/LoginAdm";
-import LoginEsta from "./pages/login/LoginEsta";
-import LoginUsuario from "./pages/login/LoginUsuario";
-import ParkingLotList from "./pages/crud/parkingLot/ParkingLotList";
-import ParkingForm from "./pages/crud/parkingLot/ParkingLotCreateEdit";
+import LoginAdm from "./pages/administrador/LoginAdm";
+import LoginEsta from "./pages/estacionamento/LoginEsta";
+import LoginUsuario from "./pages/userPages/LoginUsuario";
 import CheckInForm from "./pages/estacionamento/checkIn";
 import CheckOutForm from "./pages/estacionamento/checkOut";
 import { useEffect, useState } from "react";
@@ -16,6 +14,8 @@ import { CreateUser } from "./pages/userPages/CreateUser";
 import { CreateTicket } from "./pages/userPages/CreateTicket";
 import { CreateCar } from "./pages/userPages/CreateCar";
 import { UserProfile } from "./pages/userPages/UserProfile";
+import ParkingForm from "./pages/administrador/ParkingLotCreateEdit";
+import ParkingLotList from "./pages/administrador/ParkingLotList";
 
 function App() {
   const [isLogged, setIsLogged] = useState(false);
@@ -61,12 +61,13 @@ function App() {
                 element={<ParkingForm onSubmit={() => {}} />}
               />
               <Route path="/listEstacionamentos" element={<ParkingLotList />} />
+              
               <Route path="/" element={<LoginAdm />} />
               <Route path="/LoginUsuario" element={<LoginUsuario />} />
               <Route path="/MeuEstacionamento" element={<LoginEsta />} />
-              <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<Navigate to={"/404"} />} />
 
+              <Route path="/404" element={<NotFound />} />
               <Route path="/createUser" element={<CreateUser />} />
               <Route path="/createTicket" element={<CreateTicket />} />
               {/** Criar methodo para buscar o ticket automaticamente */}
@@ -74,7 +75,7 @@ function App() {
 
               <Route path="/createCar" element={<CreateCar />} />
               <Route path="/editCar/:id" element={<CreateCar />} />
-              
+
               <Route path="/userProfile" element={<UserProfile />} />
             </Routes>
           </BrowserRouter>

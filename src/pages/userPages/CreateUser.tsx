@@ -11,12 +11,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Estado, City, states } from "../crud/parkingLot/ParkingLotCreateEdit";
 import { getDocs, setDoc, doc } from "firebase/firestore";
 import { fireAuth, fireDb, usersRef } from "../../services/firebaseService";
 import { Badge, Email, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { Estado, City, states } from "../administrador/ParkingLotCreateEdit";
 
 export interface UserProps {
   id: string;
