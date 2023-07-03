@@ -41,6 +41,8 @@ export interface ParkingLotInterface {
   phone: string;
   email: string;
   openingHours: Record<string, { openingTime: string; closingTime: string }>;
+  totalSpots: number;
+  usedSpots: number;
   services: {
     wifi: boolean;
     security: boolean;
@@ -78,6 +80,8 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
     zipCode: "",
     phone: "",
     email: "",
+    totalSpots: 0,
+    usedSpots: 0,
     openingHours: {},
     services: {
       wifi: false,
@@ -321,6 +325,17 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
                 </MenuItem>
               )}
             </Select>
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <TextField
+              fullWidth
+              name="Vagas totais"
+              label="Vagas totais"
+              type="number"
+              inputProps={{ maxLength: 5, min: 0 }}
+              value={formData.totalSpots}
+              onChange={(event) => handleInputChange(event)}
+            />
           </Grid>
           <Grid item xs={12}>
             <h3>Horário de Funcionamento:</h3>

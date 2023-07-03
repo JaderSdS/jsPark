@@ -31,7 +31,7 @@ export default function LoginEsta() {
     signInWithEmailAndPassword(fireAuth, email, password)
       .then(() => {
         enqueueSnackbar("Bem vindo novamente", { variant: "success" });
-        navigate("AdmLoged");
+        navigate("checkIn");
       })
       .catch((error) => {
         if (error.code === "auth/user-not-found")
