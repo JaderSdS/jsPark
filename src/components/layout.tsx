@@ -31,14 +31,15 @@ const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
   return (
     <Grid container>
       <Grid item xs={12}>
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Toolbar
             sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } }}
           >
             {menuItems.map((item, index) => (
               <Typography
+                key={index}
                 variant="subtitle1"
-                component="div"
+                component="span"
                 sx={{ flexGrow: 1 }}
                 onClick={() => navigate(item.link)}
               >

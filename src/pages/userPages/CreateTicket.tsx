@@ -10,7 +10,6 @@ import {
 import {
   fireDb,
   parkingLotRef,
-  ticketsRef,
   usersRef,
 } from "../../services/firebaseService";
 import { closeSnackbar, useSnackbar } from "notistack";
@@ -196,6 +195,64 @@ export const CreateTicket: React.FC = () => {
     }
   };
 
+  //função para pegar o dia da semana e ver qual o horário de funcionamento do estacionamento
+  const getDay = () => {
+    var diasSemana = [
+      "Domingo",
+      "Segunda-Feira",
+      "Terça-Feira",
+      "Quarta-Feira",
+      "Quinta-Feira",
+      "Sexta-Feira",
+      "Sábado",
+    ];
+
+    const today = new Date();
+    const day = today.getDay();
+    const parkingLot = selectedParkingLot;
+    if (parkingLot) {
+      let weekDays = Object.keys(parkingLot.openingHours).map((key) => {
+        return { [key]: parkingLot.openingHours[key] };
+      });
+
+      let ordered = weekDays.sort((a, b) => {
+        debugger;
+        if (
+          diasSemana.indexOf(Object.keys(a)[0]) >
+          diasSemana.indexOf(Object.keys(b)[0])
+        ) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      console.log(ordered)
+      switch (day) {
+        case 0:
+          let string0 = parkingLot.openingHours["Domingo"];
+          return `das ${string0.openingTime} às ${string0.closingTime}`;
+        case 1:
+          let string1 = parkingLot.openingHours["Segunda-Feira"];
+          return `das ${string1.openingTime} às ${string1.closingTime}`;
+        case 2:
+          let string2 = parkingLot.openingHours["Terça-Feira"];
+          return `das ${string2.openingTime} às ${string2.closingTime}`;
+        case 3:
+          let string3 = parkingLot.openingHours["Quarta-Feira"];
+          return `das ${string3.openingTime} às ${string3.closingTime}`;
+        case 4:
+          let string4 = parkingLot.openingHours["Quinta-Feira"];
+          return `das ${string4.openingTime} às ${string4.closingTime}`;
+        case 5:
+          let string5 = parkingLot.openingHours["Sexta-Feira"];
+          return `das ${string5.openingTime} às ${string5.closingTime}`;
+        case 6:
+          let string6 = parkingLot.openingHours["Sábado"];
+          return `das ${string6.openingTime} às ${string6.closingTime}`;
+      }
+    }
+  };
+
   return (
     <Layout menuItems={userMenus}>
       <Grid container direction="column" alignItems="center" spacing={2}>
@@ -313,7 +370,13 @@ export const CreateTicket: React.FC = () => {
             </Typography>
             {/* [] TODO PREENCHER VAGAS DISPONIVEIS */}
             <Typography variant="body1" sx={{ margin: "4px" }}>
-              <strong>Vagas disponíveis</strong> : 1111 : 1111
+              <strong>Vagas disponíveis</strong> : 30 / 100
+            </Typography>
+            <Typography variant="body1" sx={{ margin: "4px" }}>
+              <strong>Telefone</strong> : {selectedParkingLot.phone}
+            </Typography>
+            <Typography variant="body1" sx={{ margin: "4px" }}>
+              <strong>Aberto hoje</strong> das 08:00 às 19:00
             </Typography>
             {parkingLotServices.length > 0 && (
               <Typography variant="body1" sx={{ margin: "4px" }}>
@@ -332,52 +395,52 @@ export const CreateTicket: React.FC = () => {
               columns={{ xs: 4, sm: 4, md: 4 }}
             >
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   até 1 hora:
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   R$ {selectedParkingLot.prices.hourlyRate.toFixed(2)}
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   até 2 horas:
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   R$ {(selectedParkingLot.prices.hourlyRate * 2).toFixed(2)}
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   até 3 horas:
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   R$ {(selectedParkingLot.prices.hourlyRate * 3).toFixed(2)}
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   até 4 horas:
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   R$ {(selectedParkingLot.prices.hourlyRate * 4).toFixed(2)}
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   Diária:
                 </Typography>
               </Grid>
               <Grid item xs={2} sm={2} md={2}>
-                <Typography variant="body1" sx={{ margin: "4px" }}>
+                <Typography variant="body1" >
                   R$ {selectedParkingLot.prices.dailyRate.toFixed(2)}
                 </Typography>
               </Grid>

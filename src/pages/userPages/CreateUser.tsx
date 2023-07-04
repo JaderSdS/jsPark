@@ -28,7 +28,7 @@ export interface UserProps {
 
 export const userMenus = [
   { label: "Gerar ticket", link: "/createTicket" },
-  { label: "Histórico", link: "/ticketsHistory" },
+  { label: "Histórico", link: "/ticketsHistoric" },
   { label: "Perfil", link: "/userProfile" },
 ];
 

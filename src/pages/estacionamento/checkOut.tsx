@@ -34,7 +34,7 @@ const CheckOutForm: React.FC = () => {
   const [parkingLot, setParkingLot] = useState<ParkingLotInterface>();
   const [ticket, setTicket] = useState<ParkingTicket>();
   const { enqueueSnackbar } = useSnackbar();
-  const [exitTime] = useState<Date>(new Date());
+  const [exitTime] = useState<Date>(new Date(1686873600000));
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setPlate(value);

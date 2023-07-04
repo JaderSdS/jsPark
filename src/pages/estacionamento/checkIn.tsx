@@ -24,6 +24,7 @@ interface ParkingFormProps {
 export const estaMenus = [
   { label: "Check In", link: "/checkIn" },
   { label: "Check Out", link: "/checkOut" },
+  { label: "Relatórios", link: "/relatorio" },	
 ];
 
 export interface ParkingTicket {
@@ -110,10 +111,10 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     let services: item[] = [];
     Object.keys(parkingLotCnpj[0].services).forEach((element: any) => {
       if (parkingLotCnpj[0].services[element]) {
+        debugger;
+        let labelT = allServices[element as keyof typeof allServices];
         services.push({
-          label:
-            Object.values(allServices).find((service) => service === element) ||
-            "",
+          label: labelT,
           value:
             Object.keys(allServices).find((service) => service === element) ||
             "",
@@ -274,11 +275,12 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
           {parkingLotServices.length > 0 &&
             //services are an object, how to map it?
             parkingLotServices.map((service) => {
+              debugger;
               return (
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={false}
+                      checked={services.includes(service.value)}
                       onChange={handleServiceChange}
                       value={service}
                     />
@@ -287,6 +289,9 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
                 />
               );
             })}
+        </Grid>
+        <Grid item xs={12} md={12} sm={12}>
+          <Typography variant="h6">Vagas disponiveis: 19 / 100</Typography>
         </Grid>
         <Grid item xs={12} md={12} sm={12}>
           <Button variant="contained" color="primary" onClick={handleSubmit}>

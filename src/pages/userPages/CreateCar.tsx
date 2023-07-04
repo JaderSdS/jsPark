@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  Abc,
   CalendarMonth,
   ColorLens,
   DirectionsCar,
@@ -25,6 +26,7 @@ import { useSnackbar } from "notistack";
 
 export interface CarInterface {
   id: string;
+  name: string;
   plate: string;
   color: string;
   model: string;
@@ -37,6 +39,7 @@ export const CreateCar: React.FC = () => {
   const navigate = useNavigate();
   const contextUser = useContext(AuthContext);
   const [plate, setPlate] = useState("");
+  const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -76,6 +79,7 @@ export const CreateCar: React.FC = () => {
 
     const car: CarInterface = {
       id: plate.toUpperCase(),
+      name: plate.toUpperCase(),
       plate: plate.toUpperCase(),
       color: color,
       model: model,
@@ -182,6 +186,23 @@ export const CreateCar: React.FC = () => {
               ),
             }}
             inputProps={{ maxLength: 7 }}
+          />
+        </Grid>
+        <Grid item>
+          <TextField
+            sx={{ minWidth: 300 }}
+            label="Nome"
+            variant="outlined"
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Abc />
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
         <Grid item>

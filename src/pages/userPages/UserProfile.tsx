@@ -80,9 +80,25 @@ export const UserProfile: React.FC = () => {
           >
             <Grid item xs={6} md={6} sm={6}>
               <Typography variant="h5">
+                <strong>Carro:</strong>
+              </Typography>
+            </Grid>
+            <Grid item xs={6} md={6} sm={6}>
+              <Typography variant="h5">
+                {car.name}
+                {car.alert ? (
+                  <NotificationsActive fontSize="small" />
+                ) : (
+                  <div style={{ width: "20px" }}></div>
+                )}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} md={6} sm={6}>
+              <Typography variant="h5">
                 <strong>Placa:</strong>
               </Typography>
             </Grid>
+
             <Grid item xs={6} md={6} sm={6}>
               <Typography
                 variant="h6"
@@ -93,21 +109,6 @@ export const UserProfile: React.FC = () => {
                 }}
               >
                 {car.plate}
-                {car.alert ? (
-                  <NotificationsActive fontSize="small" />
-                ) : (
-                  <div style={{ width: "20px" }}></div>
-                )}
-                {
-                  <Button
-                    color="inherit"
-                    variant="contained"
-                    onClick={() => navigate(`/editCar/${car.id}`)}
-                    sx={{ justifySelf: "flex-end", padding: "-15px" }}
-                  >
-                    <Edit fontSize="small" />
-                  </Button>
-                }
               </Typography>
             </Grid>
             <Grid item xs={6} md={6} sm={6}>
@@ -141,6 +142,16 @@ export const UserProfile: React.FC = () => {
                 onClick={() => excludeCar(car.id)}
               >
                 <DeleteForever />
+              </Button>
+            </Grid>
+            <Grid item xs={6} md={6} sm={6}>
+              <Button
+                color="inherit"
+                variant="contained"
+                onClick={() => navigate(`/editCar/${car.id}`)}
+                sx={{ justifySelf: "flex-end", padding: "-15px" }}
+              >
+                <Edit fontSize="small" />
               </Button>
             </Grid>
           </Grid>
