@@ -11,7 +11,7 @@ import {
   SelectChangeEvent,
   InputAdornment,
 } from "@mui/material";
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
 import { ParkingTicket, estaMenus } from "./checkIn";
 import { parkingLotRef, ticketsRef } from "../../services/firebaseService";
 import { doc, getDocs, query, setDoc, where } from "firebase/firestore";

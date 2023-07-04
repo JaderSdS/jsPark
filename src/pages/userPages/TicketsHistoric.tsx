@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
 import { getDocs } from "firebase/firestore";
 import { parkingLotRef, ticketsRef } from "../../services/firebaseService";
 import { ParkingTicket } from "../estacionamento/checkIn";

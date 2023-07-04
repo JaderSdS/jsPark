@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Grid, Typography } from "@mui/material";
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
 import { userMenus } from "./CreateUser";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/UserContext";

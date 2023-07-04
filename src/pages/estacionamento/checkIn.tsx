@@ -7,8 +7,9 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import { setDoc, doc, getDocs } from "firebase/firestore";
+import { setDoc, doc, getDocs, query, where } from "firebase/firestore";
 import {
+  carsRef,
   fireDb,
   parkingLotRef,
   ticketsRef,
@@ -17,14 +18,20 @@ import { AuthContext } from "../../contexts/UserContext";
 import { closeSnackbar, useSnackbar } from "notistack";
 import QRCode from "react-qr-code";
 import { CloseOutlined, Print } from "@mui/icons-material";
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
+import {
+  Estado,
+  ParkingLotInterface,
+} from "../administrador/ParkingLotCreateEdit";
+import { sendEmail } from "../../services/emailService";
+import estadosCidades from "../../services/estadosCidades.json";
 interface ParkingFormProps {
   onSubmit: (formData: ParkingTicket) => void;
 }
 export const estaMenus = [
   { label: "Check In", link: "/checkIn" },
   { label: "Check Out", link: "/checkOut" },
-  { label: "Relatórios", link: "/relatorio" },	
+  { label: "Relatórios", link: "/relatorio" },
 ];
 
 export interface ParkingTicket {
@@ -85,6 +92,7 @@ export const allServices = {
   valetService: "Manobrista",
   electricCarCharging: "Carregamento de carro elétrico",
 };
+export const states: Estado[] = estadosCidades.estados;
 
 const CheckInForm: React.FC<ParkingFormProps> = () => {
   const [plate, setPlate] = useState("");
@@ -97,9 +105,11 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
 
   const user = useContext(AuthContext);
 
-  const [parkingLot, setParkingLot] = useState<any>();
+  const [parkingLot, setParkingLot] = useState<ParkingLotInterface>();
 
-  const [parkingLotServices, setParkingLotServices] = useState<item[]>([]); // [ {name: "Lavagem", price: 10}, {name: "Lavagem", price: 10}
+  const [parkingLotServices, setParkingLotServices] = useState<item[]>([]);
+
+  const [usedSpots, setUsedSpots] = useState<number>(0);
 
   const getParkingLotCnpj = async () => {
     const data = await getDocs(parkingLotRef);
@@ -107,11 +117,10 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     const parkingLotCnpj = parkingLot.filter(
       (parkingLot) => parkingLot.email === user?.email
     );
-    setParkingLot(parkingLotCnpj[0]);
+    setParkingLot(parkingLotCnpj[0] as ParkingLotInterface);
     let services: item[] = [];
     Object.keys(parkingLotCnpj[0].services).forEach((element: any) => {
       if (parkingLotCnpj[0].services[element]) {
-        debugger;
         let labelT = allServices[element as keyof typeof allServices];
         services.push({
           label: labelT,
@@ -122,12 +131,29 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
       }
     });
     setParkingLotServices(services);
+
+    getUsedSpots();
+  };
+
+  const getUsedSpots = async () => {
+    const data = await getDocs(ticketsRef);
+    const tickets = data.docs.map((doc) => doc.data());
+    const parkingLotTickets = tickets.filter(
+      (ticket) => ticket.cnpj === parkingLot?.cnpj && ticket.status === "Open"
+    );
+    setUsedSpots(parkingLotTickets.length);
   };
 
   useEffect(() => {
     getParkingLotCnpj();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (parkingLot) {
+      getUsedSpots();
+    }
+  }, [parkingLot]);
 
   const handlePlateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -177,7 +203,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
       plate,
       color,
       services,
-      cnpj: parkingLot.cnpj,
+      cnpj: parkingLot!.cnpj.toString(),
       exitTime: 0,
       paymentMethod: "",
       value: 0,
@@ -186,7 +212,8 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     };
 
     await setDoc(doc(fireDb, "tickets", formData.id), formData);
-
+    getCarInfo(plate);
+    getUsedSpots();
     const style = {
       alignItems: "center",
       justifyContent: "center",
@@ -230,7 +257,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
             Cor: {color}
           </Grid>
           <Grid item style={style} sm={12} md={12}>
-            Cnpj: {parkingLot.cnpj}
+            Cnpj: {parkingLot!.cnpj}
           </Grid>
           <Grid item style={style} sm={12} md={12}>
             Serviços: {services}
@@ -242,6 +269,33 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
 
     setColor("");
     setPlate("");
+  };
+
+  const getCarInfo = async (plate: string) => {
+    const carQuery = query(carsRef, where("plate", "==", plate));
+    const data = await getDocs(carQuery);
+    const car = data.docs.map((doc) => doc.data());
+    if (car.length > 0) {
+      if (car[0].alert) {
+        let estadocidade = await getCityAndState(
+          parkingLot!.state,
+          parkingLot!.city
+        );
+        await sendEmail(
+          plate,
+          parkingLot!,
+          car[0].owner,
+          estadocidade.state,
+          estadocidade.city
+        );
+      }
+    }
+  };
+
+  const getCityAndState = async (stateID: number, cityID: number) => {
+    const state = states.find((state) => state.id === stateID);
+    const city = state!.cidades.find((city) => city.id === cityID);
+    return { state: state!.nome, city: city!.nome };
   };
 
   return (
@@ -275,7 +329,6 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
           {parkingLotServices.length > 0 &&
             //services are an object, how to map it?
             parkingLotServices.map((service) => {
-              debugger;
               return (
                 <FormControlLabel
                   control={
@@ -290,9 +343,14 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
               );
             })}
         </Grid>
-        <Grid item xs={12} md={12} sm={12}>
-          <Typography variant="h6">Vagas disponiveis: 19 / 100</Typography>
-        </Grid>
+        {parkingLot && (
+          <Grid item xs={12} md={12} sm={12}>
+            <Typography variant="h6">
+              Vagas disponiveis: {parkingLot.totalSpots - usedSpots} /{" "}
+              {parkingLot!.totalSpots}
+            </Typography>
+          </Grid>
+        )}
         <Grid item xs={12} md={12} sm={12}>
           <Button variant="contained" color="primary" onClick={handleSubmit}>
             Registrar

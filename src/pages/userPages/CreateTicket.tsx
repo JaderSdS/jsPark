@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
 import {
   ParkingTicket,
   allServices,
@@ -192,64 +192,6 @@ export const CreateTicket: React.FC = () => {
           { action, autoHideDuration: 10000 }
         );
       });
-    }
-  };
-
-  //função para pegar o dia da semana e ver qual o horário de funcionamento do estacionamento
-  const getDay = () => {
-    var diasSemana = [
-      "Domingo",
-      "Segunda-Feira",
-      "Terça-Feira",
-      "Quarta-Feira",
-      "Quinta-Feira",
-      "Sexta-Feira",
-      "Sábado",
-    ];
-
-    const today = new Date();
-    const day = today.getDay();
-    const parkingLot = selectedParkingLot;
-    if (parkingLot) {
-      let weekDays = Object.keys(parkingLot.openingHours).map((key) => {
-        return { [key]: parkingLot.openingHours[key] };
-      });
-
-      let ordered = weekDays.sort((a, b) => {
-        debugger;
-        if (
-          diasSemana.indexOf(Object.keys(a)[0]) >
-          diasSemana.indexOf(Object.keys(b)[0])
-        ) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
-      console.log(ordered)
-      switch (day) {
-        case 0:
-          let string0 = parkingLot.openingHours["Domingo"];
-          return `das ${string0.openingTime} às ${string0.closingTime}`;
-        case 1:
-          let string1 = parkingLot.openingHours["Segunda-Feira"];
-          return `das ${string1.openingTime} às ${string1.closingTime}`;
-        case 2:
-          let string2 = parkingLot.openingHours["Terça-Feira"];
-          return `das ${string2.openingTime} às ${string2.closingTime}`;
-        case 3:
-          let string3 = parkingLot.openingHours["Quarta-Feira"];
-          return `das ${string3.openingTime} às ${string3.closingTime}`;
-        case 4:
-          let string4 = parkingLot.openingHours["Quinta-Feira"];
-          return `das ${string4.openingTime} às ${string4.closingTime}`;
-        case 5:
-          let string5 = parkingLot.openingHours["Sexta-Feira"];
-          return `das ${string5.openingTime} às ${string5.closingTime}`;
-        case 6:
-          let string6 = parkingLot.openingHours["Sábado"];
-          return `das ${string6.openingTime} às ${string6.closingTime}`;
-      }
     }
   };
 

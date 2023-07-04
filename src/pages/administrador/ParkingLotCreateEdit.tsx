@@ -15,7 +15,7 @@ import { adminMenuItems } from "./ParkingLotList";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import estadosCidades from "../../services/estadosCidades.json";
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
 import { fireDb } from "../../services/firebaseService";
 interface ParkingFormProps {
   onSubmit: (formData: ParkingLotInterface) => void;

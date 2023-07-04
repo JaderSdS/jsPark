@@ -1,6 +1,6 @@
 import { collection, getDocs } from "firebase/firestore";
 import { useState, useEffect } from "react";
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
 import ParkingListComponent from "../../components/ParkingLotListComponent";
 import { fireDb } from "../../services/firebaseService";
 import { ParkingLotInterface } from "./ParkingLotCreateEdit";
