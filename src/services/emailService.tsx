@@ -10,7 +10,6 @@ export const sendEmail = async (
   state: string,
   city: string
 ) => {
-  debugger;
   const message =
     "O veículo de placa " +
     plate +
