@@ -1,24 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import Layout from "../../components/layout";
-import { getDocs } from "firebase/firestore";
+import { getDocs, orderBy, query, where } from "firebase/firestore";
 import { parkingLotRef, ticketsRef } from "../../services/firebaseService";
 import { ParkingTicket } from "../estacionamento/checkIn";
 import BlueCard from "../../components/BlueCard";
 import { AuthContext } from "../../contexts/UserContext";
 import { getUserCars } from "./UserProfile";
-import { CarInterface } from "./CreateCar";
+//import { CarInterface } from "./CreateCar";
 import { Typography } from "@mui/material";
 import { ParkingLotInterface } from "../administrador/ParkingLotCreateEdit";
-
-export const userMenus = [
-  { label: "Gerar ticket", link: "/createTicket" },
-  { label: "Histórico", link: "/HistoricoTicket" },
-  { label: "Perfil", link: "/editUser" },
-];
+import { userMenus } from "./CreateUser";
 
 const HistoricoTicket: React.FC = () => {
   const contextUser = useContext(AuthContext);
-  const [userCars, setUserCars] = useState<CarInterface[]>();
+  //const [userCars, setUserCars] = useState<CarInterface[]>();
   const [tickets, setTicket] = useState<ParkingTicket[]>();
   const [parkingLot, setParkingLot] = useState<ParkingLotInterface[]>();
 
@@ -27,7 +23,7 @@ const HistoricoTicket: React.FC = () => {
     let ticketsFromCar = cars.map((car) => {
       return GetTickets(car.plate);
     });
-    setUserCars(cars as CarInterface[]);
+    //setUserCars(cars as CarInterface[]);
     setTicket((await Promise.all(ticketsFromCar)).flat() as ParkingTicket[]);
   };
 
@@ -40,15 +36,22 @@ const HistoricoTicket: React.FC = () => {
   };
 
   const GetTickets = async (plate: string) => {
-    const data = await getDocs(ticketsRef);
+    const ticketQuery = query(
+      ticketsRef,
+      where("plate", "==", plate),
+      orderBy("entryTime", "desc")
+    );
+    const data = await getDocs(ticketQuery);
     let t = data.docs.map((e) => {
       return e.data();
     });
-    return t.filter((e) => e.plate == plate);
+    return t
+      .filter((e) => e.plate === plate)
+      .sort((a, b) => b.entryTime - a.entryTime);
   };
 
-  const GetNamePark = (cnpj: number) => {
-    let value = parkingLot?.filter((x) => x.cnpj == cnpj)[0];
+  const GetNamePark = (cnpj: string) => {
+    let value = parkingLot?.filter((x) => x.cnpj === cnpj)[0];
     if (value) return value.name;
     else return "Não encontrado";
   };
@@ -80,7 +83,7 @@ const HistoricoTicket: React.FC = () => {
             { key: "Placa", value: e["plate"] },
             {
               key: "Estacionamento",
-              value: GetNamePark(Number(e.cnpj)) as string,
+              value: GetNamePark(e.cnpj) as string,
             },
             { key: "Entrada", value: GetDateByTimestamp(e["entryTime"]) },
             { key: "Saída", value: GetDateByTimestamp(e["exitTime"]) },
@@ -93,7 +96,7 @@ const HistoricoTicket: React.FC = () => {
           ];
           return (
             <span>
-              <BlueCard record={c} icon="Open" />
+              <BlueCard record={c} icon={e["status"]} />
             </span>
           );
         })}

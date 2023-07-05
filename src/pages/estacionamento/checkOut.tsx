@@ -34,7 +34,7 @@ const CheckOutForm: React.FC = () => {
   const [parkingLot, setParkingLot] = useState<ParkingLotInterface>();
   const [ticket, setTicket] = useState<ParkingTicket>();
   const { enqueueSnackbar } = useSnackbar();
-  const [exitTime] = useState<Date>(new Date(1686873600000));
+  const [exitTime] = useState<Date>(new Date());
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setPlate(value);
@@ -138,7 +138,7 @@ const CheckOutForm: React.FC = () => {
     <Layout menuItems={estaMenus}>
       <Grid container direction="column" alignItems="center" spacing={2}>
         <Grid item xs={6} md={12} sm={12}>
-          <Typography style={{ marginTop: "16px" }} variant="h4">
+          <Typography variant="h4">
             Registrar saída
           </Typography>
         </Grid>

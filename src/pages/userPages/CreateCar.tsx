@@ -159,7 +159,6 @@ export const CreateCar: React.FC = () => {
     <Layout menuItems={userMenus}>
       <Grid
         container
-        sx={{ marginTop: "32px" }}
         direction="column"
         alignItems="center"
         spacing={2}

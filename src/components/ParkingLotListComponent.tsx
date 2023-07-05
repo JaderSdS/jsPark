@@ -28,8 +28,8 @@ const ParkingListComponent: React.FC<ParkingListProps> = ({
   update,
 }) => {
   const parkingLotRef = collection(fireDb, "estacionamentos");
-  const deleteParkingLot = async (id: number) => {
-    await deleteDoc(doc(parkingLotRef, id.toString()));
+  const deleteParkingLot = async (id: string) => {
+    await deleteDoc(doc(parkingLotRef, id));
     update();
   };
 

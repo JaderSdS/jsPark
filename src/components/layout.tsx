@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
       <Grid item xs={12}>
         <AppBar position="fixed">
           <Toolbar
-            sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } }}
+            sx={{ display: "flex", flexDirection: { xs: "column", sm: "row", md: "row" } }}
           >
             {menuItems.map((item, index) => (
               <Typography
@@ -58,7 +58,7 @@ const Layout: React.FC<LayoutProps> = ({ menuItems, children }) => {
           </Toolbar>
         </AppBar>
         <Grid container justifyContent="flex-start">
-          <Grid item xs={11}>
+          <Grid sx={{ marginTop: { xs: "20%",  md: '5%' } }} item xs={12}>
             {children}
           </Grid>
         </Grid>

@@ -33,7 +33,7 @@ export interface Estado {
 
 export interface ParkingLotInterface {
   name: string;
-  cnpj: number;
+  cnpj: string;
   address: string;
   city: number;
   state: number;
@@ -73,7 +73,7 @@ export const states: Estado[] = estadosCidades.estados;
 const ParkingForm: React.FC<ParkingFormProps> = () => {
   const emptyData = {
     name: "",
-    cnpj: 0,
+    cnpj: "",
     address: "",
     city: 0,
     state: 0,
@@ -227,7 +227,7 @@ const ParkingForm: React.FC<ParkingFormProps> = () => {
       <form onSubmit={handleSubmit}>
         <Grid textAlign="center" container alignItems={"flex-end"} spacing={3}>
           <Grid item xs={12}>
-            <Typography style={{ marginTop: "16px" }} variant="h4">
+            <Typography variant="h4">
               Formulário de Cadastro de Estacionamento
             </Typography>
           </Grid>

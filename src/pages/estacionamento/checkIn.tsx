@@ -18,13 +18,13 @@ import { AuthContext } from "../../contexts/UserContext";
 import { closeSnackbar, useSnackbar } from "notistack";
 import QRCode from "react-qr-code";
 import { CloseOutlined, Print } from "@mui/icons-material";
-import Layout from "../../components/layout";
 import {
   Estado,
   ParkingLotInterface,
 } from "../administrador/ParkingLotCreateEdit";
 import { sendEmail } from "../../services/emailService";
 import estadosCidades from "../../services/estadosCidades.json";
+import Layout from "../../components/layout";
 interface ParkingFormProps {
   onSubmit: (formData: ParkingTicket) => void;
 }
@@ -153,6 +153,7 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     if (parkingLot) {
       getUsedSpots();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parkingLot]);
 
   const handlePlateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -298,8 +299,88 @@ const CheckInForm: React.FC<ParkingFormProps> = () => {
     return { state: state!.nome, city: city!.nome };
   };
 
+  // Array para armazenar os registros dos tíquetes de estacionamento
+  const parkingTickets: ParkingTicket[] = [];
+
+  // Função para gerar um número aleatório entre dois valores
+  function getRandomNumber(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Função para gerar uma data aleatória nos últimos 30 dias
+  function getRandomDateWithinLast30Days(): Date {
+    const today = new Date();
+    const startDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000); // Subtrai 30 dias em milissegundos
+    const endDate = today.getTime();
+    const randomTimestamp = getRandomNumber(startDate.getTime(), endDate);
+    return new Date(randomTimestamp);
+  }
+
+  // Função para gerar um horário de entrada aleatório entre 08:00 e 18:00
+  function getRandomEntryTime(): Date {
+    const entryTime = getRandomDateWithinLast30Days();
+    entryTime.setHours(getRandomNumber(8, 18), getRandomNumber(0, 59), 0, 0);
+    return entryTime;
+  }
+
+  // Função para gerar um horário de saída aleatório após o horário de entrada
+  function getRandomExitTime(entryTime: Date): Date {
+    const exitTime = new Date(entryTime);
+    exitTime.setHours(entryTime.getHours() + getRandomNumber(1, 10)); // Adiciona 1 a 10 horas ao horário de entrada
+    return exitTime;
+  }
+
+  function getRandonPaymentMethod(): string {
+    const paymentMethods = [
+      "Dinheiro",
+      "Cartão de crédito",
+      "Cartão de débito",
+    ];
+    const randomIndex = getRandomNumber(0, paymentMethods.length - 1);
+    return paymentMethods[randomIndex];
+  }
+
+  function creatAlotOfTickets() {
+    // Loop para gerar os registros dos tíquetes de estacionamento
+    for (let i = 0; i < 10; i++) {
+      const entryTime = getRandomEntryTime();
+      const exitTime = getRandomExitTime(entryTime);
+
+      const parkingTicket: ParkingTicket = {
+        id: `Ticket${i + 1}`,
+        cnpj: "CNPJ do estacionamento",
+        plate: "ABC123",
+        services: ["Serviço 1", "Serviço 2"],
+        color: "Vermelho",
+        entryTime: entryTime.getTime(),
+        exitTime: exitTime.getTime(),
+        paymentMethod: getRandonPaymentMethod(),
+        value: calculateAmountPaid(entryTime.getTime(), exitTime.getTime()),
+        status: "Closed",
+      };
+
+      parkingTickets.push(parkingTicket);
+    }
+
+    console.log(parkingTickets);
+  }
+  
+  const calculateAmountPaid = (entryTime: number, exitTime: number): number => {
+    const permanenceTime = (exitTime - entryTime) / 3600000;
+
+    if (permanenceTime < 1) {
+      return parkingLot!.prices.hourlyRate;
+    }
+
+    if (permanenceTime > 5) {
+      return parkingLot!.prices.dailyRate;
+    }
+    const amountPaid = permanenceTime * parkingLot!.prices.hourlyRate;
+    return amountPaid;
+  };
   return (
     <Layout menuItems={estaMenus}>
+      <Button onClick={creatAlotOfTickets}>GERA TICKETS PAKAS</Button>
       <Grid container spacing={2}>
         <Grid item xs={6} md={12} sm={12}>
           <Typography style={{ marginTop: "16px" }} variant="h4">
